@@ -13,18 +13,35 @@ const pool = new Pool({
   database: process.env.DB_NAME,
 });
 
-interface cash {
+interface Cash {
   movie_id: number;
   price_id: number;
-  id:number;
+  user_id:number;
   cash_id:number;
 }
 
 
+// getメソッド
+export async function GET() {
+  const client = await pool.connect();
+  try{
+      const ret = await client.query('SELECT * FROM "Category"',[]);
+      return NextResponse.json(ret.rows);
+  } catch (error) {
+      console.error("Error executing query",error);
+      return NextResponse.json(
+          { error: "Error executing query" },
+          { status: 500 }
+      );
+  } finally {
+      client.release();
+  }
+}
+
 // POSTメソッドの処理
 export async function POST(req: NextRequest) {
   try {
-    const {movie_id,price_id,id,cash_id }: cash =
+    const {movie_id,price_id,user_id,cash_id }: Cash =
       await req.json();
 
 
@@ -34,7 +51,7 @@ export async function POST(req: NextRequest) {
         INSERT INTO "User" (movie_id,price_id,id,cash_id) 
         VALUES ($1, $2, $3, $4) 
         RETURNING *`;
-      const values = [movie_id,price_id,id,cash_id];
+      const values = [movie_id,price_id,user_id,cash_id];
       const result = await client.query(query, values);
       return NextResponse.json(result.rows[0], { status: 201 });
     } catch (error) {
