@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect } from 'react';
 import { BigScreen } from './_components/BigScreen';
-import { MiddleScreen } from './_components/MiddleScreen';
+// import { MiddleScreen } from './_components/MiddleScreen';
 import { SmallScreen } from './_components/SmallScreen';
 import { BreadcrumbList } from './_components/BreadCrumbList';
 import { Box, Button } from '@yamada-ui/react';
@@ -13,7 +13,7 @@ import { useSeat } from '../hooks';
 const Page = () => {
 	const { handleReservedSeatInfo, handleReserveSeat } = useSeat();
 	useEffect(() => {
-		handleReservedSeatInfo(5);
+		handleReservedSeatInfo(1);
 	}, []);
 
 	return (
@@ -43,13 +43,13 @@ const Page = () => {
 							justifyContent={'space-between'}
 							w={'100%'}
 						>
-							{/* <BigScreen /> */}
-							<MiddleScreen />
+							<BigScreen />
+							{/* <MiddleScreen /> */}
 							{/* <SmallScreen /> */}
 							<Button
 								w={'100%'}
 								rounded={'none'}
-								onClick={() => handleReserveSeat(1, 5, '7/5')}
+								onClick={() => handleReserveSeat(1, 1, 1)}
 							>
 								選択した座席を予約する
 							</Button>
