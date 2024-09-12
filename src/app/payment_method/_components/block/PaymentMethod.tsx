@@ -15,6 +15,10 @@ const PaymentMethod = () => {
 	const [paymentMethods, setPaymentMethods] = useState<Method[]>([]);
 	const [selectedPaymentMethod, setSelectedPaymentMethod] =
 		useState<string>('');
+	const [name, setName] = useState<string>('');
+	const [email, setEmail] = useState<string>('');
+	const [phone, setPhone] = useState<string>('');
+
 	useEffect(() => {
 		const fetchData = async () => {
 			const MethodData = await fetchMethod();
@@ -30,6 +34,10 @@ const PaymentMethod = () => {
 	// 型の修正
 	const handlePaymentMethodChange = (value: string) => {
 		setSelectedPaymentMethod(value);
+	};
+
+	const finish = () => {
+		alert('購入が完了しました。');
 	};
 
 	return (
@@ -64,26 +72,40 @@ const PaymentMethod = () => {
 			</Box>
 
 			<Box m="0px 40px">
-				<form>
+				<form typeof="submit">
 					<Box m="10px 0">
 						<Text fontSize="1rem" mb="5px">
 							お名前
 						</Text>
-						<Input name="name" placeholder="お名前" w="100%" />
+						<Input
+							name="name"
+							placeholder="お名前"
+							w="100%"
+							onChange={(e) => setName(e.target.value)}
+						/>
 					</Box>
 
 					<Box m="10px 0">
 						<Text fontSize="1rem" mb="5px">
 							MAIL
 						</Text>
-						<Input name="e_mail" placeholder="メールアドレス" />
+						<Input
+							name="e_mail"
+							placeholder="メールアドレス"
+							onChange={(e) => setEmail(e.target.value)}
+						/>
 					</Box>
 
 					<Box m="10px 0">
 						<Text fontSize="1rem" mb="5px">
 							電話番号
 						</Text>
-						<Input name="phone_num" type="text" placeholder="電話番号" />
+						<Input
+							name="phone_num"
+							type="text"
+							placeholder="電話番号"
+							onChange={(e) => setPhone(e.target.value)}
+						/>
 					</Box>
 
 					<Box m="10px 0">

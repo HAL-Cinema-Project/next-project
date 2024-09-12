@@ -1,4 +1,5 @@
 //page.tsx
+'use client';
 import { Box, Button, Center, Text } from '@yamada-ui/react';
 import React from 'react';
 import Tickets from './_components/block/Tickets';
@@ -6,7 +7,7 @@ import PaymentMethod from './_components/block/PaymentMethod';
 import StartOverBtn from './_components/block/StartOverBtn';
 import Link from 'next/link';
 
-const page = () => {
+const page = async () => {
 	return (
 		<Box maxW="1500px" m="0 auto">
 			<Box
@@ -79,7 +80,7 @@ const page = () => {
 					</Link>
 				</Box>
 				<Box w="900px" p="10px 20px">
-					<Link href="/next-page">
+					<Link href="/">
 						<Button w="100%" h="50px" p="20px 0" colorScheme="blue">
 							次へ進む
 						</Button>
