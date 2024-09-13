@@ -1,4 +1,5 @@
 //page.tsx
+'use client';
 import { Box, Button, Center, Text } from '@yamada-ui/react';
 import React from 'react';
 import Tickets from './_components/Tickets';
@@ -7,7 +8,7 @@ import { BreadcrumbList } from './_components/BreadcrumbList';
 import { Title } from './_components/Title';
 import Link from 'next/link';
 
-const page = () => {
+const page = async () => {
 	return (
 		<Box
 			margin="0 auto"

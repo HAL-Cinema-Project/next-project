@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Text } from '@yamada-ui/react';
+import { Box, Button } from '@yamada-ui/react';
 import { BreadcrumbList } from '../_components/BreadCrumbList';
 import { TicketCaption } from './_components/TicketCaption';
 import { TicketSelect } from './_components/TicketSelect';
@@ -12,7 +12,6 @@ import { totalPriceState } from '@/app/recoil/atoms/ticketAtoms';
 import { getRandomInt } from '@/utils/randomInt';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { userSchedule } from '@/app/hooks/userSchedule';
-import Link from 'next/link';
 
 const Page = () => {
 	const [handleScheduleInfo, setHandleScheduleInfo] =
@@ -61,11 +60,12 @@ const Page = () => {
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
-		const data = {
-			price_sum: totalPrice,
-			ticket_id: [],
-		};
-		router.push('/payment_method?price_sum=' + data);
+		// const data = {
+		// 	price_sum: totalPrice,
+		// 	ticket_id: [],
+		// };
+
+		router.push('/payment_method');
 
 		// console.log(data);
 		// try {
