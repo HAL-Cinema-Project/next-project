@@ -168,3 +168,9 @@ model UserSchedule {
   schedule Schedule @relation(fields: [schedule_id], references: [schedule_id])
 
 }
+
+//Cinemaモデル
+model Cinema{
+  cinema_id Int @id @default(autoincrement())
+  cinema_region String
+}
