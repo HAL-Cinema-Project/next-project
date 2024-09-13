@@ -78,6 +78,7 @@ export const useSeat = () => {
 			};
 
 			// デバッグ用にseatDataをログ出力
+			console.log(seatData);
 			setSeatState(seatData);
 
 			const response = await fetch(`../server/route/schedule`, {

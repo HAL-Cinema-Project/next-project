@@ -36,10 +36,24 @@ export const TicketSelect = () => {
 	const setUnivTicket = useSetRecoilState(univTicketState);
 	const setHighSchoolTicket = useSetRecoilState(highSchoolTicketState);
 	const setChildTicket = useSetRecoilState(childTicketState);
-	setNormalTicket(normal);
-	setUnivTicket(collegeStudent);
-	setHighSchoolTicket(middleStudent);
-	setChildTicket(kids);
+
+	React.useEffect(() => {
+		setNormalTicket(normal);
+		setUnivTicket(collegeStudent);
+		setHighSchoolTicket(middleStudent);
+		setChildTicket(kids);
+	}, [
+		normal,
+		collegeStudent,
+		middleStudent,
+		kids,
+		setNormalTicket,
+		setUnivTicket,
+		setHighSchoolTicket,
+		setChildTicket,
+	]);
+
+	console.log({ normal, collegeStudent, middleStudent, kids });
 
 	const buttonStyle: React.CSSProperties = {
 		width: '20px',
