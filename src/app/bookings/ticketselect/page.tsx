@@ -90,59 +90,89 @@ const Page = () => {
 	};
 
 	return (
-		<div>
-			<>
-				<Box maxW={'1500px'} m={'20px'}>
-					<form onSubmit={handleSubmit}>
-						<Box w={'80%'} m={'auto'}>
-							<BreadcrumbList />
-							<TicketCaption />
+		<Box
+			margin="0 auto"
+			maxWidth="1500px"
+			width="100%"
+			height="auto"
+			backgroundColor="#fff"
+		>
+			<BreadcrumbList />
+			<TicketCaption />
 
-							<Box
-								display={'flex'}
-								justifyContent={'space-between'}
-								gap={'10px'}
+			<Box
+				display="flex"
+				gap="10px"
+				margin="15px 0"
+				padding="10px"
+				borderRadius="2px"
+				border="solid 1px #ddd"
+			>
+				<Box
+					display="flex"
+					flexDirection="column"
+					justifyContent="space-between"
+					maxW="400px"
+					minW="400px"
+					width="100%"
+				>
+					<TicketSelect />
+					<Box
+						alignItems="space-between"
+						width="100%"
+						height="40px"
+						borderRadius="2px"
+						backgroundColor="#111"
+						_hover={{
+							bg: '#08f',
+							color: '#fff',
+							transition: 'background-color 0.3s ease',
+						}}
+					>
+						<Link href="/" passHref>
+							<Text
+								fontSize="20px"
+								lineHeight="2.0"
+								textAlign="center"
+								color="#fff"
 							>
-								<Box
-									display={'flex'}
-									flexDirection={'column'}
-									justifyContent={'space-between'}
-									w={'100%'}
-								>
-									<TicketSelect />
-									<Box alignItems={'space-between'}>
-										<Button w={'100%'} rounded={'none'}>
-											キャンセル
-										</Button>
-									</Box>
-								</Box>
-
-								<Box
-									w={'100%'}
-									display={'flex'}
-									flexDirection={'column'}
-									justifyContent={'space-between'}
-								>
-									{renderScreenComponent()}
-									<Button
-										w={'100%'}
-										rounded={'none'}
-										type="submit"
-										onClick={() =>
-											handleScheduleInfo
-												? handleScheduleInfo(scheduleId)
-												: undefined
-										} // 修正: handleScheduleInfo の存在確認と呼び出し
-									>
-										次へ進む
-									</Button>
-								</Box>
-							</Box>
-						</Box>
+								キャンセル
+							</Text>
+						</Link>
+					</Box>
+				</Box>
+				<Box
+					display={'flex'}
+					flexDirection={'column'}
+					justifyContent={'space-between'}
+					maxW="1070px"
+					minW="1070px"
+					width="100%"
+				>
+					{renderScreenComponent()}
+					<form onSubmit={handleSubmit}>
+						<Button
+							w="100%"
+							height="40px"
+							rounded="2px"
+							bgColor="#111"
+							color="#fff"
+							type="submit"
+							onClick={() =>
+								handleScheduleInfo ? handleScheduleInfo(scheduleId) : undefined
+							} // 修正: handleScheduleInfo の存在確認と呼び出し
+							_hover={{
+								bg: '#08f',
+								color: '#fff',
+								transition: 'background-color 0.3s ease',
+							}}
+						>
+							次へ進む
+						</Button>
 					</form>
 				</Box>
-			</>
-		</div>
+			</Box>
+		</Box>
 	);
 };
 
