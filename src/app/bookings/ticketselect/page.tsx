@@ -60,32 +60,7 @@ const Page = () => {
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
-		const data = {
-			price_sum: totalPrice,
-			ticket_id: [],
-		};
-		router.push('/payment_method?price_sum=' + data);
-
-		// console.log(data);
-		// try {
-		// 	const res = await fetch('/server/route/price', {
-		// 		method: 'POST',
-		// 		headers: {
-		// 			'Content-Type': 'application/json',
-		// 		},
-		// 		body: JSON.stringify(data),
-		// 	});
-		// 	if (res.ok) {
-		// 		const json = await res.json();
-		// 		console.log(json);
-		// 		alert('購入が完了しました');
-		// 		router.push('/');
-		// 	} else {
-		// 		console.error('HTTP-Error: ' + res.status);
-		// 	}
-		// } catch (e) {
-		// 	console.error(e);
-		// }
+		router.push('/payment_method');
 	};
 
 	return (
