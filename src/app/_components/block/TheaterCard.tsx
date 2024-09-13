@@ -4,18 +4,21 @@ import {
 	CardHeader,
 	Heading,
 	Image,
+	Link,
 	Text,
 	VStack,
 } from '@yamada-ui/react';
 import React from 'react';
 
 interface theaterType {
+	id: number;
 	theaterImage: string;
 	theaterName: string;
 	theaterInformation: string;
 }
 
 const TheaterCard = ({
+	id,
 	theaterImage,
 	theaterName,
 	theaterInformation,
@@ -51,11 +54,9 @@ const TheaterCard = ({
 						alignItems="center"
 					>
 						<Heading size="md">{theaterName}</Heading>
-						<Heading
-							className="goTheaterPage"
-							size="sm"
-							color="secondary"
-						>{`劇場を見る >`}</Heading>
+						<Heading className="goTheaterPage" size="sm" color="secondary">
+							<Link href={`../../theaters/${id}`}>{`劇場を見る >`}</Link>
+						</Heading>
 					</CardHeader>
 
 					<CardBody>

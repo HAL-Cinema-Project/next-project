@@ -8,13 +8,25 @@ type Movie = {
 	movie_name: string;
 };
 
+type MovieTime = {
+	time_id: number;
+	movie_start: string;
+};
+
+type Seat = {
+	seat_id: number;
+	seat_point: string;
+};
+
 type Schedule = {
 	schedule_id: number;
 	screen_id: number;
 	movie_id: number;
-	seat_id: number[] | null;
-	movie_start: string;
+	seat_id: number | null;
+	time_id: number;
 	movie: Movie | null;
+	movie_time: MovieTime | null;
+	seat: Seat | null;
 };
 
 type TicketInfoProps = {
@@ -110,7 +122,7 @@ export const TicketInfo: React.FC<TicketInfoProps> = ({ schedules }) => {
 										<Box>
 											<Text>座席情報</Text>
 											<Box display="flex" w="100%">
-												<Text>{schedule.seat_id}</Text>
+												<Text>{schedule.seat?.seat_point}</Text>
 											</Box>
 										</Box>
 									</Box>
@@ -127,7 +139,7 @@ export const TicketInfo: React.FC<TicketInfoProps> = ({ schedules }) => {
 											<Box>
 												<Text>上映日時</Text>
 												<Box display="flex">
-													<Text>{schedule.movie_start}</Text>
+													<Text>{schedule.movie_time?.movie_start}</Text>
 												</Box>
 											</Box>
 										</Box>

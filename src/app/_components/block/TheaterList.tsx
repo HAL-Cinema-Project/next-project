@@ -33,6 +33,7 @@ const TheaterList = () => {
 				{theater.map((data, index) => (
 					<TheaterCard
 						key={index}
+						id={data.id}
 						theaterImage={data.theaterImage}
 						theaterName={data.theaterName}
 						theaterInformation={data.theaterInformation}

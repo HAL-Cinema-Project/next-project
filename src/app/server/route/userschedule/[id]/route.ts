@@ -9,13 +9,13 @@ const pool = new Pool({
 
 interface UserSchedule {
 	user_schedule_id: number;
-	user_id: number;
+	user_id: string;
 	schedule_id: number;
 }
 
 export async function GET(
 	req: NextRequest,
-	{ params }: { params: { id: number } }
+	{ params }: { params: { id: string } }
 ) {
 	const client = await pool.connect();
 	const { id } = params;
@@ -46,7 +46,7 @@ export async function GET(
 // updateメソッド
 export async function PATCH(
 	req: NextRequest,
-	{ params }: { params: { id: number } }
+	{ params }: { params: { id: string } }
 ) {
 	try {
 		const { user_id, schedule_id }: UserSchedule = await req.json();
@@ -82,7 +82,7 @@ export async function PATCH(
 
 export async function DELETE(
 	req: NextRequest,
-	{ params }: { params: { id: number } }
+	{ params }: { params: { id: string } }
 ) {
 	try {
 		const { id } = params;

@@ -50,19 +50,45 @@ import {
 	SegmentedControlItem,
 	useBreakpointValue,
 } from '@yamada-ui/react';
-import React, { useState } from 'react';
-import { movieCard } from '@/mock/theater/movie/mock';
-import { fetchMovieResponse } from '@/mock/theater/movie/MovieInterface';
+import React, { useEffect, useState } from 'react';
 import { MovieScheduleField } from './_components/MovieScheduleField';
 import { BreadcrumbList } from './_components/BreadcrumbList';
 import { Title } from './_components/Title';
 import { getNextWeekDates } from '@/utils/scheduleDate';
+import { fetchMovie } from '@/app/hooks/useMovie';
+
+interface Movie {
+	key: number;
+	movie_id: number;
+	movie_image: string;
+	movie_name: string;
+}
 
 const Page = () => {
+	const [movies, setMovies] = useState<Movie[]>([]);
+	const [loading, setLoading] = useState(true);
 	const items: SegmentedControlItem[] = getNextWeekDates();
 	const breakpoint = useBreakpointValue({ base: 'base', sm: 'sm', md: 'md' });
 	const isSmallScreen = ['sm', 'md'].includes(breakpoint);
 	const [selectedDate, setSelectedDate] = useState(0);
+
+	useEffect(() => {
+		const fetchData = async () => {
+			const moviesData = await fetchMovie();
+			const formattedData: Movie[] = moviesData.map((movie: any) => ({
+				movie_id: movie.movie_id,
+				movie_image: movie.movie_image1,
+				movie_name: movie.movie_name,
+			}));
+			setMovies(formattedData);
+			setLoading(false);
+		};
+		fetchData();
+	}, []);
+
+	if (loading) {
+		return <p>loading</p>;
+	}
 	return (
 		<Box
 			margin="0 auto"
@@ -92,12 +118,12 @@ const Page = () => {
 					}}
 				/>
 			</Box>
-			{movieCard.map((data: fetchMovieResponse) => (
+			{movies.map((movie: Movie) => (
 				<MovieScheduleField
-					key={data.id}
-					id={data.id}
-					title={data.title}
-					image={data.movie_image}
+					key={movie.movie_id}
+					movie_id={movie.movie_id}
+					movie_image={movie.movie_image}
+					movie_name={movie.movie_name}
 				/>
 			))}
 		</Box>

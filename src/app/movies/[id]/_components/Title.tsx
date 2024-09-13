@@ -20,7 +20,7 @@ export const Title = () => {
 					color: '#fff',
 				}}
 			>
-				作品詳細
+				上映スケジュール
 			</p>
 		</div>
 	);

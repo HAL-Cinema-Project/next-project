@@ -42,7 +42,7 @@ export const BreadcrumbList = () => {
 					</span>
 				</Link>
 				{' > '}
-				<Link href={`/theaters/${id}/theater_schedule/`} passHref>
+				<Link href={`/theaters/${id}`} passHref>
 					<span
 						style={{ color: '#fff', textDecoration: 'none', cursor: 'pointer' }}
 					>

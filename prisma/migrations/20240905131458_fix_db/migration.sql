@@ -5,12 +5,17 @@
   - The primary key for the `UserSchedule` table will be changed. If it partially fails, the table could be left without primary key constraint.
   - Added the required column `price_sum` to the `Price` table without a default value. This is not possible if the table is not empty.
   - Added the required column `ticket_id` to the `Price` table without a default value. This is not possible if the table is not empty.
+  - Changed the type of `seat_id` on the `Schedule` table. No cast exists, the column would be dropped and recreated, which cannot be done if there is data, since the column is required.
 
 */
 -- AlterTable
 ALTER TABLE "Price" DROP COLUMN "price",
 ADD COLUMN     "price_sum" INTEGER NOT NULL,
 ADD COLUMN     "ticket_id" INTEGER NOT NULL;
+
+-- AlterTable
+ALTER TABLE "Schedule" DROP COLUMN "seat_id",
+ADD COLUMN     "seat_id" INTEGER NOT NULL;
 
 -- AlterTable
 ALTER TABLE "UserSchedule" DROP CONSTRAINT "UserSchedule_pkey",

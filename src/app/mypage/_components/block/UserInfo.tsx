@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
 	Box,
 	Button,
@@ -9,14 +9,15 @@ import {
 	Text,
 	useBreakpoint,
 } from '@yamada-ui/react';
-import user from '../../../hooks/useUserId'; // User型のインポートパスを調整してください
+import useUserId from '../../../hooks/useUserId'; // User型のインポートパスを調整してください
+import Cookies from 'js-cookie';
+import { useRouter } from 'next/navigation';
 
 type UserInfoProps = {
 	user: {
 		user_id: string;
 		first_name: string;
 		last_name: string;
-		schedule_id: number | null;
 		e_mail: string;
 		password: string;
 		birthday: string;
@@ -25,6 +26,39 @@ type UserInfoProps = {
 };
 
 const UserInfo: React.FC<UserInfoProps> = ({ user }) => {
+	const router = useRouter();
+	const cookie = Cookies.get('user_id');
+
+	const [email, setEmail] = React.useState<string>('');
+	const [password, setPassword] = React.useState<string>('');
+
+	if (!cookie) {
+		router.push('/login');
+		return;
+	}
+
+	const handleChange = async (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		try {
+			const res = await fetch(`../server/route/user/${cookie}`, {
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ e_mail: email, password }),
+			});
+			if (res.ok) {
+				alert('更新が完了しました');
+				router.refresh();
+			} else {
+				alert('更新に失敗しました');
+			}
+		} catch (error) {
+			console.error('エラー:', error);
+			alert('エラーが発生しました');
+		}
+	};
+
 	return (
 		<Box bgColor="#fff" color="#000" py="20px">
 			<Box
@@ -114,7 +148,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ user }) => {
 				</Box>
 			</Box>
 
-			<form>
+			<form onSubmit={handleChange}>
 				<Box
 					w="80%"
 					m="0 auto"
@@ -130,6 +164,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ user }) => {
 						ログイン設定
 					</Text>
 					<Text
+						type="submit"
 						as="button"
 						color="blue"
 						_hover={{ color: 'darkblue' }}
@@ -153,7 +188,13 @@ const UserInfo: React.FC<UserInfoProps> = ({ user }) => {
 							<Box>
 								<Text>E-MAIL</Text>
 								<Box display="flex" bgColor="#fff">
-									<Input name="e-mail" placeholder="email" w="100%" />
+									<Input
+										name="email"
+										placeholder="email"
+										w="100%"
+										value={email}
+										onChange={(e) => setEmail(e.target.value)}
+									/>
 								</Box>
 							</Box>
 						</Box>
@@ -169,7 +210,14 @@ const UserInfo: React.FC<UserInfoProps> = ({ user }) => {
 							<Box>
 								<Text>パスワード</Text>
 								<Box display="flex" bgColor="#fff">
-									<Input name="password" placeholder="パスワード" w="100%" />
+									<Input
+										name="password"
+										placeholder="パスワード"
+										w="100%"
+										type="password"
+										value={password}
+										onChange={(e) => setPassword(e.target.value)}
+									/>
 								</Box>
 							</Box>
 						</Box>

@@ -65,19 +65,18 @@ import { fetchScheduleInterface } from '@/mock/schedule/scheduleInterface';
 import { TheaterSchedule } from './TheaterSchedule';
 import Link from 'next/link';
 
-type propsType = {
+type MovieCardProps = {
 	key: number;
-	id: number;
-	title: string;
-	image: string;
+	movie_image: string;
+	movie_name: string;
+	movie_id: number;
 };
 
-export const MovieScheduleField = (props: propsType) => {
+export function MovieScheduleField(movie: MovieCardProps) {
 	const breakpoint = useBreakpoint();
-
 	return (
 		<Card
-			key={props.id}
+			key={movie.movie_id}
 			width="100%"
 			marginTop="15px"
 			padding="10px 0"
@@ -101,7 +100,7 @@ export const MovieScheduleField = (props: propsType) => {
 						color: '#fff',
 					}}
 				>
-					{props.title}
+					{movie.movie_name}
 				</p>
 			</Box>
 			<Box
@@ -117,8 +116,8 @@ export const MovieScheduleField = (props: propsType) => {
 				>
 					<Box position="relative">
 						<Image
-							src={props.image}
-							alt={props.title}
+							src={`/${movie.movie_image}`}
+							alt={movie.movie_image}
 							width="100%"
 							objectFit="cover"
 							style={{ borderRadius: '2px' }}
@@ -141,6 +140,7 @@ export const MovieScheduleField = (props: propsType) => {
 								screening_time={data.screening_time}
 								screen_number={data.screen_number}
 								reservation={data.reservation}
+								movie_id={movie.movie_id}
 							/>
 						))}
 					</Box>
@@ -148,4 +148,4 @@ export const MovieScheduleField = (props: propsType) => {
 			</Box>
 		</Card>
 	);
-};
+}

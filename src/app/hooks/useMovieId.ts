@@ -7,6 +7,8 @@ type Movie = {
 	movie_time: number;
 	movie_image1: string;
 	movie_image2: string;
+	movie_cast: string;
+	movie_director: string;
 };
 
 const fetchMovieId = async (id: number): Promise<Movie | null> => {

@@ -8,6 +8,7 @@ interface Props {
 	key: number;
 	x_axis: keyof SeatInfoProps;
 	y_axis: number;
+	buttonColor: string;
 }
 
 export const SeatButton = (props: Props) => {
@@ -23,7 +24,7 @@ export const SeatButton = (props: Props) => {
 			}
 			w={'25px'}
 			h={'35px'}
-			bg={isSelected ? '#aff' : '#ddd'}
+			bg={isSelected ? props.buttonColor : '#ddd'}
 			_disabled={{
 				bg: '#999',
 				cursor: 'not-allowed',

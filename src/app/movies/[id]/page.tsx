@@ -15,8 +15,8 @@ const Page = () => {
 	const id_num = Number(str_id);
 
 	const { movie, loading, error } = useMovieId(id_num);
-	console.log(id_num);
-	console.log(movie);
+	// console.log(id_num);
+	// console.log(movie);
 	if (!movie) {
 		return (
 			<Box
@@ -44,7 +44,7 @@ const Page = () => {
 			<BreadcrumbList />
 			<Title />
 			<MovieInformation movie={movie} />
-			<ScheduleAccordion />
+			<ScheduleAccordion movie={movie} />
 		</Box>
 	);
 };

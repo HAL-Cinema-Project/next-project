@@ -7,7 +7,7 @@ const pool = new Pool({
 });
 
 interface Ticket {
-	ticket_id: number;
+	ticket_id: string;
 	ticket_price: number;
 }
 
@@ -15,7 +15,21 @@ export async function GET() {
 	const client = await pool.connect();
 	try {
 		const ret = await client.query('SELECT * FROM "Ticket"', []);
-		return NextResponse.json(ret.rows);
+
+		const ticketTypes = ret.rows.map((ticket: Ticket) => {
+			let type = '';
+			if (ticket.ticket_id == '1') {
+				type = 'normal';
+			} else if (ticket.ticket_id == '2') {
+				type = 'collegeStudent';
+			} else if (ticket.ticket_id == '3') {
+				type = 'middleStudent';
+			} else if (ticket.ticket_id == '4') {
+				type = 'kids';
+			}
+			return { ...ticket, type };
+		});
+		return NextResponse.json(ticketTypes);
 	} catch (error) {
 		console.error('Error executing query', error);
 		return NextResponse.json(

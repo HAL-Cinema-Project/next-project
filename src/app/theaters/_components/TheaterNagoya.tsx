@@ -20,7 +20,7 @@ const TheaterNagoya = () => {
 			border="solid 1px #ddd"
 			backgroundColor="#fff"
 			cursor="pointer"
-			onClick={() => (window.location.href = '/theaters/2/theater_schedule')}
+			onClick={() => (window.location.href = '/theaters/2')}
 			_hover={{
 				'& .title-box': {
 					backgroundColor: '#08f',

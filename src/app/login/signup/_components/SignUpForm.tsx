@@ -18,36 +18,6 @@ export const SignUpForm = () => {
 	const router = useRouter();
 	const breakpoint = useBreakpoint();
 
-	// const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-	// 		e.preventDefault();
-	// 		const formData = new FormData(e.currentTarget);
-	// 		const data = {
-	// 			first_name: formData.get('first_name'),
-	// 			last_name: formData.get('last_name'),
-	// 			e_mail: formData.get('e_mail'),
-	// 			password: formData.get('password'),
-	// 			birthday: formData.get('birthday'),
-	// 			gender: formData.get('gender'),
-	// 		};
-	// 		try {
-	// 			const res = await fetch('/server/route/user', {
-	// 				method: 'POST',
-	// 				headers: {
-	// 					'Content-Type': 'application/json',
-	// 				},
-	// 				body: JSON.stringify(data),
-	// 			});
-	// 			if (res.ok) {
-	// 				const json = await res.json();
-	// 				console.log(json);
-	// 			} else {
-	// 				console.error('HTTP-Error: ' + res.status);
-	// 			}
-	// 		} catch (e) {
-	// 			console.error(e);
-	// 		}
-	// 	};
-
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		const formData = new FormData(e.currentTarget);

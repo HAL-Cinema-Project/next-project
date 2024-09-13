@@ -20,7 +20,7 @@ const BreadcrumbList = () => {
 				{' > '}
 				<Link href="/movies" passHref>
 					<Text as="span" color="#fff" textDecoration="none" cursor="pointer">
-						映画案内
+						作品案内
 					</Text>
 				</Link>
 			</Text>

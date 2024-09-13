@@ -49,18 +49,24 @@ export async function POST(req: NextRequest, res: NextResponse) {
 			httpOnly: true,
 			secure: true,
 			path: '/',
+			expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7日間の有効期限
+			maxAge: 7 * 24 * 60 * 60,
 		});
 
 		response.cookies.set('refresh_token', session.refresh_token, {
 			httpOnly: true,
 			secure: true,
 			path: '/',
+			expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7日間の有効期限
+			maxAge: 7 * 24 * 60 * 60,
 		});
 
 		response.cookies.set('user_id', session.user.id, {
-			// httpOnly: true,
+			httpOnly: false,
 			secure: true,
 			path: '/',
+			expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7日間の有効期限
+			maxAge: 7 * 24 * 60 * 60,
 		});
 
 		return response;

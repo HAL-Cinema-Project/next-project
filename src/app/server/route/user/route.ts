@@ -66,8 +66,8 @@ export async function POST(req: NextRequest) {
 
 			const query = `
 
-        INSERT INTO "User" (user_id, first_name, last_name, password, e_mail, birthday, schedule_id, gender, created_at, updated_at) 
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW()) 
+        INSERT INTO "User" (user_id, first_name, last_name, password, e_mail, birthday, gender, created_at, updated_at) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW()) 
 
         RETURNING *`;
 

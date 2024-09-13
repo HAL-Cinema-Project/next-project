@@ -1,91 +1,3 @@
-// import {
-// 	Accordion,
-// 	AccordionItem,
-// 	Box,
-// 	Grid,
-// 	useBreakpointValue,
-// 	SegmentedControl,
-// 	SegmentedControlItem,
-// } from '@yamada-ui/react';
-// import React, { useState } from 'react';
-// import { ScheduleList } from './ScheduleList';
-// import { scheduleData } from '@/mock/schedule/mock';
-// import { fetchScheduleInterface } from '@/mock/schedule/scheduleInterface';
-// import { getNextWeekDates } from '@/utils/scheduleDate';
-
-// export const ScheduleAccordion = () => {
-// 	const breakpoint = useBreakpointValue({ base: 'base', sm: 'sm', md: 'md' });
-// 	const isSmallScreen = ['sm', 'md'].includes(breakpoint);
-
-// 	const [selectedDate, setSelectedDate] = useState(0);
-
-// 	const style = {
-// 		color: 'scheduleAccordion.text',
-// 		bgColor: '#111',
-// 		w: '100%',
-// 	};
-
-// 	const dateItems: SegmentedControlItem[] = getNextWeekDates().map(
-// 		(item, index) => ({
-// 			label: item.label,
-// 			value: index.toString(),
-// 		})
-// 	);
-
-// 	return (
-// 		<>
-// 			<Box margin="15px 0">
-// 				<SegmentedControl
-// 					borderRadius="2px"
-// 					w="100%"
-// 					items={dateItems}
-// 					value={selectedDate.toString()}
-// 					onChange={(value) => setSelectedDate(Number(value))}
-// 					flexWrap="nowrap"
-// 					overflowX="auto"
-// 					sx={{
-// 						display: 'grid',
-// 						gridTemplateColumns: isSmallScreen
-// 							? 'repeat(2, 1fr)'
-// 							: 'repeat(auto-fit, minmax(100px, 1fr))',
-// 						gap: 2,
-// 					}}
-// 				/>
-// 				<Accordion
-// 					marginTop={'15px'}
-// 					sx={{
-// 						...style,
-// 					}}
-// 					isToggle
-// 				>
-// 					{['東京', '名古屋', '大阪'].map((city) => (
-// 						<AccordionItem key={city} p="20px 0" label={city}>
-// 							<Grid
-// 								templateColumns={
-// 									isSmallScreen
-// 										? 'repeat(2, 1fr)'
-// 										: 'repeat(auto-fill, minmax(200px, 1fr))'
-// 								}
-// 								gap={2}
-// 								overflowX="hidden"
-// 							>
-// 								{scheduleData.map((data: fetchScheduleInterface) => (
-// 									<ScheduleList
-// 										key={data.id}
-// 										screening_time={data.screening_time}
-// 										screen_number={data.screen_number}
-// 										reservation={data.reservation}
-// 									/>
-// 								))}
-// 							</Grid>
-// 						</AccordionItem>
-// 					))}
-// 				</Accordion>
-// 			</Box>
-// 		</>
-// 	);
-// };
-
 import {
 	Accordion,
 	AccordionItem,
@@ -94,6 +6,8 @@ import {
 	useBreakpointValue,
 	SegmentedControl,
 	SegmentedControlItem,
+	AccordionLabel,
+	AccordionPanel,
 } from '@yamada-ui/react';
 import React, { useState } from 'react';
 import { ScheduleList } from './ScheduleList';
@@ -101,16 +15,41 @@ import { scheduleData } from '@/mock/schedule/mock';
 import { fetchScheduleInterface } from '@/mock/schedule/scheduleInterface';
 import { getNextWeekDates } from '@/utils/scheduleDate';
 
-export const ScheduleAccordion = () => {
-	const breakpoint = useBreakpointValue({ base: 'base', sm: 'sm', md: 'md' });
+type MovieInformationProps = {
+	movie: {
+		movie_id: number;
+		movie_name: string;
+		movie_detail: string;
+		movie_time: number;
+		movie_image1: string;
+		movie_image2: string;
+		movie_cast: string;
+		movie_director: string;
+	};
+};
+
+export const ScheduleAccordion = ({ movie }: MovieInformationProps) => {
+	const breakpoint = useBreakpointValue({
+		base: 'base',
+		lg: 'lg',
+		sm: 'sm',
+		md: 'md',
+	});
 	const isSmallScreen = ['sm', 'md'].includes(breakpoint);
+	const isMiddleScreen = ['lg'].includes(breakpoint);
 
 	const [selectedDate, setSelectedDate] = useState(0);
 
 	const style = {
-		color: 'scheduleAccordion.text',
 		bgColor: '#111',
-		w: '100%',
+		color: '#fff',
+		borderRadius: '2px',
+	};
+
+	const style2 = {
+		bgColor: '#fff',
+		color: '#111',
+		borderRadius: '2px',
 	};
 
 	const dateItems: SegmentedControlItem[] = getNextWeekDates().map(
@@ -120,63 +59,86 @@ export const ScheduleAccordion = () => {
 		})
 	);
 
+	const handleDateChange = (value: string) => {
+		console.log(`選択された日付: ${value}`);
+		setSelectedDate(Number(value));
+	};
+
 	return (
 		<>
 			<Box margin="15px 0">
 				<SegmentedControl
+					colorScheme="primary"
 					borderRadius="2px"
 					w="100%"
 					items={dateItems}
 					value={selectedDate.toString()}
-					onChange={(value) => setSelectedDate(Number(value))}
+					onChange={handleDateChange}
 					flexWrap="nowrap"
 					overflowX="auto"
 					sx={{
 						display: 'grid',
 						gridTemplateColumns: isSmallScreen
 							? 'repeat(2, 1fr)'
-							: 'repeat(auto-fit, minmax(100px, 1fr))',
+							: isMiddleScreen
+								? 'repeat(4, 1fr)'
+								: 'repeat(auto-fit, minmax(100px, 1fr))',
 						gap: 2,
-						bgColor: '#111', // Background color of the control
-						'& > *': {
-							color: '#fff', // Text color of the control items
-							'&[data-selected]': {
-								backgroundColor: '#08f', // Background color when an item is selected
-								color: '#fff', // Text color when an item is selected
-							},
-						},
 					}}
 				/>
-				<Accordion
-					marginTop={'15px'}
-					sx={{
-						...style,
-					}}
-					isToggle
+				<Box
+					marginTop="15px"
+					padding="10px"
+					border="solid 1px #ddd"
+					borderRadius="2px"
 				>
-					{['東京', '名古屋', '大阪'].map((city) => (
-						<AccordionItem key={city} p="20px 0" label={city}>
-							<Grid
-								templateColumns={
-									isSmallScreen
-										? 'repeat(2, 1fr)'
-										: 'repeat(auto-fill, minmax(200px, 1fr))'
-								}
-								gap={2}
-								overflowX="hidden"
+					<Accordion
+						variant="card"
+						borderRadius="2px"
+						isMultiple
+						isToggle
+						icon={'+'}
+					>
+						{['東京', '名古屋', '大阪'].map((city) => (
+							<AccordionItem
+								key={city}
+								label={city}
+								sx={{ ...style }}
+								border="none"
 							>
-								{scheduleData.map((data: fetchScheduleInterface) => (
-									<ScheduleList
-										key={data.id}
-										screening_time={data.screening_time}
-										screen_number={data.screen_number}
-										reservation={data.reservation}
-									/>
-								))}
-							</Grid>
-						</AccordionItem>
-					))}
-				</Accordion>
+								<AccordionLabel
+									_expanded={{ bg: '#08f', color: '#fff' }}
+									_hover={{ bg: '#08f', color: '#fff' }}
+								>
+									{city}
+								</AccordionLabel>
+								<AccordionPanel sx={{ p: '0' }}>
+									<Grid
+										templateColumns={
+											isSmallScreen
+												? 'repeat(2, 1fr)'
+												: 'repeat(auto-fill, minmax(230px, 1fr))'
+										}
+										overflowX="hidden"
+										sx={{ ...style2 }}
+										gap="10px"
+										marginTop="10px"
+									>
+										{scheduleData.map((data: fetchScheduleInterface) => (
+											<ScheduleList
+												key={data.id}
+												screening_time={data.screening_time}
+												screen_number={data.screen_number}
+												reservation={data.reservation}
+												movie_id={movie.movie_id}
+											/>
+										))}
+									</Grid>
+								</AccordionPanel>
+							</AccordionItem>
+						))}
+					</Accordion>
+				</Box>
 			</Box>
 		</>
 	);

@@ -42,10 +42,10 @@ export async function POST(req: NextRequest) {
 		const client = await pool.connect();
 		try {
 			const query = `
-        INSERT INTO "User" (discount_type,discount_id) 
-        VALUES ($1, $2) 
+        INSERT INTO "Discount" (discount_type) 
+        VALUES ($1) 
         RETURNING *`;
-			const values = [discount_id, discount_type];
+			const values = [discount_type];
 			const result = await client.query(query, values);
 			return NextResponse.json(result.rows[0], { status: 201 });
 		} catch (error) {

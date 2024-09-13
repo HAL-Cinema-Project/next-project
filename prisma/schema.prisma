@@ -39,10 +39,11 @@ model Schedule {
   schedule_id   Int      @id @default(autoincrement())
   screen_id     Int
   movie_id      Int
-  seat_id       Int[]  // seat_idを配列に変更
+  seat_id       Int  // seat_idを配列に変更
   time_id       Int
 
   // 外部キー設定
+  schedule Cash[]
   screen Screen @relation(fields: [screen_id], references: [screen_id])
   movie  Movie  @relation(fields: [movie_id], references: [movie_id])
   time   MovieTime @relation(fields: [time_id], references: [time_id])
@@ -71,6 +72,7 @@ model Movie {
 model Seat {
   seat_id   Int      @id @default(autoincrement())
   seat_point String  @unique
+
 }
 
 // CashMethodモデル
@@ -86,20 +88,20 @@ model CashMethod {
 model Price {
   price_id Int @id @default(autoincrement())
   price_sum    Int
-  ticket_id    Int
+  ticket_id    String
 
   // リレーション
-  cashes Cash[]
   ticket Ticket @relation(fields: [ticket_id], references: [ticket_id]) 
 }
 
 // Ticketモデル
 model Ticket{
-  ticket_id Int @id @default(autoincrement())
+  ticket_id String @id @default(uuid())
   ticket_price Int
 
   //リレーション
   price Price[]
+  cashes Cash[]
 }
 
 // Discountモデル
@@ -122,19 +124,25 @@ model Category {
 
 // Cashモデル
 model Cash {
-  cash_id     Int @id @default(autoincrement())
-  movie_id    Int
-  price_id    Int
-  user_id     String
-  method_id   Int
-  discount_id Int
-
+  cash_id     Int @id @default(autoincrement()) //会計確定してからのID
+  movie_id    Int //映画ID
+  ticket_type   String //チケットの種類
+  ticket_id   String @unique @default(uuid()) //発行されたチケットID
+  schedule_id   Int //スケジュールID
+  user_id     String //買ったユーザーID
+  method_id   Int //支払い方法
+  discount_id Int //割引情報
+  price_sum   Int //支払いの合計金額(いる？)
+  created_at  DateTime @default(now()) //購入日
+  updated_at  DateTime @updatedAt //注文更新日
+  
   // 外部キー設定
   user       User       @relation(fields: [user_id], references: [user_id])
   movie      Movie      @relation(fields: [movie_id], references: [movie_id])
   cashMethod CashMethod @relation(fields: [method_id], references: [method_id])
-  price      Price      @relation(fields: [price_id], references: [price_id])
+  ticket     Ticket      @relation(fields: [ticket_type], references: [ticket_id])
   discount   Discount   @relation(fields: [discount_id], references: [discount_id])
+  schedule   Schedule   @relation(fields: [schedule_id], references: [schedule_id])
 }
 
 // timeモデル

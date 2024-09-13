@@ -1,5 +1,10 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { Pool } from 'pg';
+import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcrypt';
+import { supabase } from '../../../supabase_index';
+
+const prisma = new PrismaClient();
 
 // db接続
 const pool = new Pool({
@@ -72,6 +77,74 @@ export async function PATCH(
 		return NextResponse.json(
 			{ error: 'Invalid request error' },
 			{ status: 400 }
+		);
+	}
+}
+
+async function updateUserProfile(newEmail?: string, newPassword?: string) {
+	const updates: { email?: string; password?: string } = {};
+
+	if (newEmail) updates.email = newEmail;
+	if (newPassword) updates.password = newPassword;
+
+	const { data, error } = await supabase.auth.updateUser(updates);
+	if (error) {
+		console.error('プロフィール更新エラー:', error.message);
+		return null;
+	}
+
+	console.log('プロフィールが更新されました:', data);
+	return data;
+}
+
+export async function PUT(
+	req: NextRequest,
+	{ params }: { params: { id: string } }
+) {
+	try {
+		const { e_mail, password } = await req.json();
+		const { id } = params;
+		const currentUser = await prisma.user.findUnique({
+			where: { user_id: id },
+		});
+		if (!currentUser) {
+			return NextResponse.json(
+				{ error: 'ユーザーが見つかりません' },
+				{ status: 404 }
+			);
+		}
+
+		const updateData: {
+			e_mail?: string;
+			password?: string;
+		} = {};
+
+		if (e_mail) updateData.e_mail = e_mail;
+		if (password) {
+			updateData.password = await bcrypt.hash(password, 10);
+		}
+
+		const change = await prisma.user.update({
+			where: { user_id: id },
+			data: updateData,
+		});
+
+		const { data, error } = await supabase.auth.updateUser({
+			email: e_mail,
+			password: password,
+		});
+		if (error) {
+			console.error('プロフィール更新エラー:', error.message);
+			return NextResponse.json({ error: error.message }, { status: 500 });
+		} else {
+		}
+
+		return NextResponse.json(change, { status: 201 });
+	} catch (error) {
+		console.error('Error executing query', error);
+		return NextResponse.json(
+			{ error: 'Error executing query' },
+			{ status: 500 }
 		);
 	}
 }

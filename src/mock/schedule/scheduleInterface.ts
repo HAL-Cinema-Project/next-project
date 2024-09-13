@@ -3,4 +3,5 @@ export interface fetchScheduleInterface {
 	screening_time: string;
 	screen_number: string;
 	reservation: boolean;
+	movie_id: number;
 }

@@ -2,13 +2,32 @@
 //途中・・・
 'use client';
 
+import { fetchMethod } from '@/app/hooks/useMethod';
 import { Box, Button, Input, Option, Select, Text } from '@yamada-ui/react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+
+interface Method {
+	method_id: number;
+	method: string;
+}
 
 const PaymentMethod = () => {
+	const [paymentMethods, setPaymentMethods] = useState<Method[]>([]);
 	const [selectedPaymentMethod, setSelectedPaymentMethod] =
 		useState<string>('');
+	useEffect(() => {
+		const fetchData = async () => {
+			const MethodData = await fetchMethod();
+			const formattedData: Method[] = MethodData.map((method: any) => ({
+				method_id: method.method_id,
+				method: method.method,
+			}));
+			setPaymentMethods(formattedData);
+		};
+		fetchMethod();
+	}, []);
 
+	// 型の修正
 	const handlePaymentMethodChange = (value: string) => {
 		setSelectedPaymentMethod(value);
 	};
@@ -76,8 +95,11 @@ const PaymentMethod = () => {
 							onChange={handlePaymentMethodChange}
 							placeholder="決済方法を選択"
 						>
-							<Option value="クレジットカード">クレジットカード</Option>
-							<Option value="現金">現金</Option>
+							{paymentMethods.map((method) => (
+								<Option key={method.method_id} value={method.method}>
+									{method.method}
+								</Option>
+							))}
 						</Select>
 					</Box>
 

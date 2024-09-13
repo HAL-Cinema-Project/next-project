@@ -12,6 +12,7 @@ import theme from '@/theme';
 import { customConfig } from '@/theme/config';
 import { Footer, Header, HeaderDrawer, SubHeader } from './_layouts/block';
 import { ContextProvider } from '@/provider/Provider';
+import { Providers } from './recoil/atoms/providers';
 
 const font = Michroma({ weight: '400', subsets: ['latin'] });
 
@@ -28,31 +29,33 @@ export default function RootLayout({
 	return (
 		<html lang="jp">
 			<body className={font.className}>
-				<ColorModeScript type="cookie" nonce="testing" />
+				<Providers>
+					<ColorModeScript type="cookie" nonce="testing" />
 
-				<UIProvider
-					colorModeManager={{ ...colorModeManager }.cookieStorage}
-					theme={theme}
-					config={customConfig}
-				>
-					<ContextProvider>
-						<Box>
-							<Header />
-						</Box>
+					<UIProvider
+						colorModeManager={{ ...colorModeManager }.cookieStorage}
+						theme={theme}
+						config={customConfig}
+					>
+						<ContextProvider>
+							<Box>
+								<Header />
+							</Box>
 
-						<Box>
-							<SubHeader />
-						</Box>
+							<Box>
+								<SubHeader />
+							</Box>
 
-						<Box w="100%" margin="0 auto">
-							{children}
-						</Box>
+							<Box w="100%" margin="0 auto">
+								{children}
+							</Box>
 
-						<Footer />
+							<Footer />
 
-						<HeaderDrawer />
-					</ContextProvider>
-				</UIProvider>
+							<HeaderDrawer />
+						</ContextProvider>
+					</UIProvider>
+				</Providers>
 			</body>
 		</html>
 	);
