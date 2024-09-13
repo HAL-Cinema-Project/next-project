@@ -15,10 +15,6 @@ const PaymentMethod = () => {
 	const [paymentMethods, setPaymentMethods] = useState<Method[]>([]);
 	const [selectedPaymentMethod, setSelectedPaymentMethod] =
 		useState<string>('');
-	const [name, setName] = useState<string>('');
-	const [email, setEmail] = useState<string>('');
-	const [phone, setPhone] = useState<string>('');
-
 	useEffect(() => {
 		const fetchData = async () => {
 			const MethodData = await fetchMethod();
@@ -36,76 +32,47 @@ const PaymentMethod = () => {
 		setSelectedPaymentMethod(value);
 	};
 
-	const finish = () => {
-		alert('購入が完了しました。');
-	};
-
 	return (
-		<Box
-			maxW="900px"
-			w="900px"
-			bg="#fff"
-			p="10px"
-			sx={{
-				'@media screen and (max-width: 1000px)': {
-					maxW: '100%',
-					w: '100%',
-				},
-			}}
-		>
+		<Box w="100%">
 			<Box
-				p="10px 20px"
-				fontSize="1.5rem"
-				mb="4px"
-				color="#fff"
-				bgColor="#333"
-				boxShadow="md"
-				sx={{
-					'@media screen and (max-width: 1000px)': {
-						w: '100%',
-					},
-				}}
+				h="40px"
+				marginBottom="10px"
+				paddingLeft="10px"
+				fontSize="20px"
+				lineHeight="2.0"
+				bgColor="#111"
 			>
-				<Text m="0 10px" fontSize="1.5rem" fontWeight="bold">
+				<Text
+					color="#fff"
+					whiteSpace="nowrap"
+					overflow="hidden"
+					textOverflow="ellipsis"
+				>
 					情報入力
 				</Text>
 			</Box>
 
-			<Box m="0px 40px">
-				<form typeof="submit">
+			<Box m="0px 2px">
+				<form>
 					<Box m="10px 0">
 						<Text fontSize="1rem" mb="5px">
 							お名前
 						</Text>
-						<Input
-							name="name"
-							placeholder="お名前"
-							w="100%"
-							onChange={(e) => setName(e.target.value)}
-						/>
+						<Input name="name" placeholder="お名前" w="100%" />
 					</Box>
 
 					<Box m="10px 0">
 						<Text fontSize="1rem" mb="5px">
 							MAIL
 						</Text>
-						<Input
-							name="e_mail"
-							placeholder="メールアドレス"
-							onChange={(e) => setEmail(e.target.value)}
-						/>
+						<Input name="e_mail" placeholder="メールアドレス" />
 					</Box>
 
 					<Box m="10px 0">
 						<Text fontSize="1rem" mb="5px">
 							電話番号
 						</Text>
-						<Input
-							name="phone_num"
-							type="text"
-							placeholder="電話番号"
-							onChange={(e) => setPhone(e.target.value)}
-						/>
+						<Input name="phone_num" type="text" placeholder="電話番号" />
 					</Box>
 
 					<Box m="10px 0">
@@ -127,12 +94,13 @@ const PaymentMethod = () => {
 
 					{selectedPaymentMethod === 'クレジットカード' && (
 						<Box
-							w="800px"
+							w="1065px"
 							m="10px auto 30px auto"
 							mt="10px"
 							p="10px"
 							boxShadow="0 0 1px #000"
 							border="1px solid #ccc"
+							borderRadius="5px"
 						>
 							<Text fontSize="1.2rem" fontWeight="bold" mb="10px">
 								クレジットカード情報を入力してください
