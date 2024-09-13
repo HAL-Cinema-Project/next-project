@@ -83,29 +83,44 @@ export async function PUT(
 		);
 	}
 }
-
-// deleteメソッド
+// DELETEメソッド（複数のSchedule削除）
 export async function DELETE(
 	req: NextRequest,
-	{ params }: { params: { id: number } }
+	{ params }: { params: { ids: number[] } }
 ) {
 	try {
-		const { id } = params;
+		const { ids } = params; // 複数の schedule_id を受け取る
 		const client = await pool.connect();
 		try {
-			const query = `
-            DELETE FROM "Schedule"
-            WHERE schedule_id = $1
-            RETURNING *`;
-			const values = [id];
-			const result = await client.query(query, values);
-			if (result.rowCount == 0) {
+			// もし削除するIDがなければエラーを返す
+			if (!ids || ids.length === 0) {
 				return NextResponse.json(
-					{ error: 'schedule not found' },
+					{ error: 'No schedule ids provided' },
+					{ status: 400 }
+				);
+			}
+
+			// スケジュールの削除処理（複数ID）
+			const query = `
+				DELETE FROM "Schedule"
+				WHERE schedule_id = ANY($1::int[])
+				RETURNING *
+			`;
+			const result = await client.query(query, [ids]);
+
+			// 削除された行がない場合はエラー
+			if (result.rowCount === 0) {
+				return NextResponse.json(
+					{ error: 'No schedules found for the provided ids' },
 					{ status: 404 }
 				);
 			}
-			return NextResponse.json({ message: 'Schedule delete successfully' });
+
+			// 成功時のレスポンス
+			return NextResponse.json({
+				message: 'Schedules deleted successfully',
+				deletedSchedules: result.rows,
+			});
 		} finally {
 			client.release();
 		}
