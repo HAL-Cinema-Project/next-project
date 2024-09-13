@@ -1,35 +1,48 @@
+'use client';
 import { useState, useEffect } from 'react';
 
 export type Schedule = {
 	schedule_id: number;
+	availableSeats: number; // 残り座席数
 	totalcapacity: number;
+	totalReservations: number; // 総予約数
 };
 
-// Function to fetch schedule data based on movie_id
-export const fetchMovieData = async (movie_id: number) => {
+export type Screen = {
+	screen_id: number;
+	screen_capacity: number;
+};
+
+// movie_idとtime_idに基づいた予約データを取得
+export const fetchReservationData = async (
+	movie_id: number,
+	time_id: number
+) => {
 	try {
-		const response = await fetch(`/server/route/schedule/movie/${movie_id}`);
+		const response = await fetch(
+			`/server/route/schedule/movie?movie_id=${movie_id}&time_id=${time_id}`
+		);
 		if (!response.ok) {
-			throw new Error('Failed to fetch movie data');
+			throw new Error('Failed to fetch reservation data');
 		}
 		const data = await response.json();
-		console.log('Movie data:', data); // デバッグ用
 		return data;
 	} catch (error) {
-		console.error('Error fetching movie data:', error);
+		console.error('Error fetching reservation data:', error);
 		return null;
 	}
 };
 
-// Function to fetch screen data based on time_id
-export const fetchTimeData = async (time_id: number) => {
+// screen_idに基づいたスクリーンの容量情報を取得
+export const fetchScreenData = async (
+	screen_id: number
+): Promise<Screen | null> => {
 	try {
-		const response = await fetch(`/server/route/schedule/time/${time_id}`);
+		const response = await fetch(`/server/route/screen/${screen_id}`);
 		if (!response.ok) {
 			throw new Error('Failed to fetch screen data');
 		}
 		const data = await response.json();
-		console.log('Time data:', data); // デバッグ用
 		return data;
 	} catch (error) {
 		console.error('Error fetching screen data:', error);
@@ -37,57 +50,45 @@ export const fetchTimeData = async (time_id: number) => {
 	}
 };
 
-export const fetchScreenData = async (screen_id: number) => {
-	try {
-		const response = await fetch(`/server/route/schedule/screen/${screen_id}`);
-		if (!response.ok) {
-			throw new Error('Failed to fetch screen data');
-		}
-		const data = await response.json();
-		console.log('Screen data:', data); // デバッグ用
-		return data;
-	} catch (error) {
-		console.error('Error fetching screen data:', error);
-		return null;
-	}
-};
-
-// Function to fetch and combine schedule data
+// スケジュールデータの取得と残席数の計算
 export const fetchSchedule = async (
 	movie_id: number,
 	time_id: number,
 	screen_id: number
 ): Promise<Schedule | null> => {
 	try {
-		const movieData = await fetchMovieData(movie_id);
-		const timeData = await fetchTimeData(time_id);
-		const screenData = await fetchScreenData(screen_id);
+		// 予約データとスクリーンの容量データを並行して取得
+		const [reservationData, screenData] = await Promise.all([
+			fetchReservationData(movie_id, time_id),
+			fetchScreenData(screen_id),
+		]);
 
 		// データが取得できているか確認
-		if (!movieData || !timeData || !screenData) {
+		if (!reservationData || !screenData) {
 			console.error('One or more data fetches failed');
 			return null;
 		}
 
-		// screen_capacity や totalReservations の存在を確認し、NaNを回避
-		const totalcapacity = screenData.screen_capacity ?? 0;
-		const totalReservations = movieData.totalReservations ?? 0;
+		// 総容量と予約済みの座席数を確認し、残席数を計算
+		const totalcapacity = screenData.screen_capacity;
+		const totalReservations = reservationData.length; // 総予約数は予約データの配列の長さと仮定
 
-		console.log(
-			'totalcapacity:',
-			totalcapacity,
-			'totalReservations:',
-			totalReservations
-		); // デバッグ用
-
+		console.log(totalReservations);
 		const availableSeats = totalcapacity - totalReservations;
 
-		if (isNaN(availableSeats)) {
+		// 残り座席数の計算結果が NaN になっていないか確認
+		if (isNaN(totalReservations)) {
 			console.error('Calculated available seats is NaN');
 			return null;
 		}
 
-		return { schedule_id: availableSeats, totalcapacity };
+		// スケジュール情報を返す
+		return {
+			schedule_id: time_id, // スケジュールIDとしてtime_idを使用
+			availableSeats,
+			totalcapacity,
+			totalReservations,
+		};
 	} catch (error) {
 		console.error('Error fetching schedule:', error);
 		return null;
@@ -121,17 +122,14 @@ export const SeatAvailability = ({
 	if (!schedule) {
 		return <div>座席情報を取得中...</div>;
 	}
+	console.log(schedule.totalReservations);
 
 	return (
 		<div>
-			{schedule.schedule_id !== null ? (
-				schedule.schedule_id === 0 ? (
-					<p>満席</p>
-				) : (
-					<p>残り {schedule.schedule_id} 席</p>
-				)
+			{schedule.availableSeats > 0 ? (
+				<p>残り {schedule.availableSeats} 席</p>
 			) : (
-				<p>座席情報がありません</p>
+				<p>満席</p>
 			)}
 		</div>
 	);
