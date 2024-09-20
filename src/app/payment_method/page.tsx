@@ -7,8 +7,13 @@ import PaymentMethod from './_components/PaymentMethod';
 import { BreadcrumbList } from './_components/BreadcrumbList';
 import { Title } from './_components/Title';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
-const page = async () => {
+const page = () => {
+	const handleSubmit: React.MouseEventHandler<HTMLButtonElement> = (e) => {
+		e.preventDefault();
+		alert('予約が完了しました');
+	};
 	return (
 		<Box
 			margin="0 auto"
@@ -81,6 +86,7 @@ const page = async () => {
 							color: '#fff',
 							transition: 'background-color 0.3s ease',
 						}}
+						onClick={handleSubmit}
 					>
 						予約する
 					</Button>

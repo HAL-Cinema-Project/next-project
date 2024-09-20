@@ -12,39 +12,39 @@ interface Schedule {
 	movie_id: number;
 	seat_id: number;
 	time_id: number;
-	screen_capacity: number; // 追加: screen_capacity を含める
 }
 
-// movie_idを使用したデータ単体取得
+// movie_id と time_id を使用して予約座席情報を取得
 export async function GET(
 	req: NextRequest,
-	{ params }: { params: { id: number } }
+	{ params }: { params: { movie_id: number; time_id: number } }
 ) {
 	const client = await pool.connect();
-	const { id } = params;
+	const { searchParams } = new URL(req.url);
+	const movie_id = searchParams.get('movie_id');
+	const time_id = searchParams.get('time_id'); // movie_id と time_id を取得
 
 	try {
-		// Schedule と Screen を JOIN して screen_capacity を取得
+		// movie_id と time_id に基づいて予約座席情報を取得するクエリ
 		const ret = await client.query<Schedule>(
-			`SELECT s.schedule_id, s.screen_id, s.movie_id, s.seat_id, s.time_id, sc.screen_capacity 
-			 FROM "Schedule" s
-			 JOIN "Screen" sc ON s.screen_id = sc.screen_id
-			 WHERE s.screen_id = $1`,
-			[id]
+			'SELECT * FROM "Schedule" WHERE movie_id = $1 AND time_id = $2',
+			[movie_id, time_id]
 		);
-
 		if (ret.rows.length === 0) {
+			// 該当する座席情報がない場合は空の配列を返す
 			return NextResponse.json([]);
 		}
-
+		// 該当する座席情報を返す
 		return NextResponse.json(ret.rows);
 	} catch (error) {
+		// エラーハンドリング
 		console.error('Error executing query', error);
 		return NextResponse.json(
 			{ error: 'Error executing query' },
 			{ status: 500 }
 		);
 	} finally {
+		// クライアント接続を解放
 		client.release();
 	}
 }
