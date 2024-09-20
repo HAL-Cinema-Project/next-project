@@ -32,19 +32,12 @@ export const ScheduleList = (props: scheduleType) => {
 	useEffect(() => {
 		const fetchData = async () => {
 			const screen_data = await fetchScreenNumber();
+			const time_data = await fetchTime();
 
 			const formattedScreen: Screen[] = screen_data.map((screen: any) => ({
 				screen_id: screen.screen_id,
 			}));
 			setScreen(formattedScreen);
-		};
-		fetchData();
-	}, []);
-	console.log(screen);
-
-	useEffect(() => {
-		const fetchTimeData = async () => {
-			const time_data = await fetchTime();
 
 			const formatTime: MovieTime[] = time_data.map((time: any) => ({
 				time_id: time.time_id,
@@ -53,8 +46,9 @@ export const ScheduleList = (props: scheduleType) => {
 			}));
 			setTime(formatTime);
 		};
-		fetchTimeData();
+		fetchData();
 	}, []);
+
 	return (
 		<>
 			{props.reservation === true ? (
@@ -66,7 +60,7 @@ export const ScheduleList = (props: scheduleType) => {
 							query: {
 								screen_id: screen.screen_id,
 								movie_id: props.movie_id,
-								time_id: time[index]?.time_id,
+								time_id: time[index].time_id,
 							},
 						}}
 						passHref
@@ -85,11 +79,15 @@ export const ScheduleList = (props: scheduleType) => {
 						>
 							<Box margin="auto">
 								<Text fontSize="1.4rem">
-									{time[index]?.movie_start || '時間未定'}
+									{time[index].movie_start || '時間未定'}
 								</Text>
 								<Text>Screen{screen.screen_id}</Text>
 								<Text>指</Text>
-								{/* <SeatAvailability movie_id={props.movie_id} screen_id={screen.screen_id} time_id={time[index].time_id}></SeatAvailability> */}
+								<SeatAvailability
+									movie_id={props.movie_id}
+									screen_id={screen.screen_id}
+									time_id={time[index].time_id}
+								></SeatAvailability>
 								<Text>予約可能</Text>
 							</Box>
 						</Card>

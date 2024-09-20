@@ -1,19 +1,45 @@
 import { Box, Button, Link, Text } from '@yamada-ui/react';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useRecoilValue } from 'recoil';
+import {
+	normalTicketState,
+	univTicketState,
+	highSchoolTicketState,
+	childTicketState,
+} from '@/app/recoil/atoms/ticketAtoms';
 
 const Ticket = () => {
-	//仮データ
+	const ticketProps = {
+		normal: useRecoilValue(normalTicketState),
+		univ: useRecoilValue(univTicketState),
+		highschool: useRecoilValue(highSchoolTicketState),
+		elem: useRecoilValue(childTicketState),
+	};
+
 	const ticketTypes = {
-		general: { type: '一般', count: 2 },
-		university: { type: '大学生', count: 1 },
-		highSchool: { type: '高校生・中学生', count: 0 },
-		elementary: { type: '小学生・幼児', count: 0 },
+		general: { type: '一般', count: ticketProps.normal },
+		university: { type: '大学生', count: ticketProps.univ },
+		highSchool: { type: '高校生・中学生', count: ticketProps.highschool },
+		elementary: { type: '小学生・幼児', count: ticketProps.elem },
 	};
 	const totalTickets = Object.values(ticketTypes).reduce(
 		(total, ticket) => total + ticket.count,
 		0
 	);
-	const totalAmount = totalTickets * 1500;
+	const [totalAmount, setTotalAmount] = useState<number>(0);
+	useEffect(() => {
+		const totalAmount =
+			ticketTypes.general.count * 1800 +
+			ticketTypes.university.count * 1600 +
+			ticketTypes.highSchool.count * 1400 +
+			ticketTypes.elementary.count * 1200;
+		setTotalAmount(totalAmount);
+	}, [
+		ticketTypes.general.count,
+		ticketTypes.university.count,
+		ticketTypes.highSchool.count,
+		ticketTypes.elementary.count,
+	]);
 	return (
 		<Box w="100%">
 			<Box

@@ -1,4 +1,5 @@
 //page.tsx
+'use client';
 import { Box, Button, Center, Text } from '@yamada-ui/react';
 import React from 'react';
 import Tickets from './_components/Tickets';
@@ -6,8 +7,13 @@ import PaymentMethod from './_components/PaymentMethod';
 import { BreadcrumbList } from './_components/BreadcrumbList';
 import { Title } from './_components/Title';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 const page = () => {
+	const handleSubmit: React.MouseEventHandler<HTMLButtonElement> = (e) => {
+		e.preventDefault();
+		alert('予約が完了しました');
+	};
 	return (
 		<Box
 			margin="0 auto"
@@ -80,6 +86,7 @@ const page = () => {
 							color: '#fff',
 							transition: 'background-color 0.3s ease',
 						}}
+						onClick={handleSubmit}
 					>
 						予約する
 					</Button>

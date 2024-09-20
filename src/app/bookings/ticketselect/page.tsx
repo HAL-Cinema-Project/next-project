@@ -9,7 +9,6 @@ import { SmallSelectSeat } from './_components/SmallSelectSeat';
 import { MiddleSelectSeat } from './_components/MiddleSelectSeat';
 import { useRecoilValue } from 'recoil';
 import { totalPriceState } from '@/app/recoil/atoms/ticketAtoms';
-import { getRandomInt } from '@/utils/randomInt';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { userSchedule } from '@/app/hooks/userSchedule';
 import Link from 'next/link';
@@ -61,32 +60,7 @@ const Page = () => {
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
-		const data = {
-			price_sum: totalPrice,
-			ticket_id: [],
-		};
-		router.push('/payment_method?price_sum=' + data);
-
-		// console.log(data);
-		// try {
-		// 	const res = await fetch('/server/route/price', {
-		// 		method: 'POST',
-		// 		headers: {
-		// 			'Content-Type': 'application/json',
-		// 		},
-		// 		body: JSON.stringify(data),
-		// 	});
-		// 	if (res.ok) {
-		// 		const json = await res.json();
-		// 		console.log(json);
-		// 		alert('購入が完了しました');
-		// 		router.push('/');
-		// 	} else {
-		// 		console.error('HTTP-Error: ' + res.status);
-		// 	}
-		// } catch (e) {
-		// 	console.error(e);
-		// }
+		router.push('/payment_method');
 	};
 
 	return (
@@ -97,60 +71,60 @@ const Page = () => {
 			height="auto"
 			backgroundColor="#fff"
 		>
-			<form onSubmit={handleSubmit}>
-				<BreadcrumbList />
-				<TicketCaption />
+			<BreadcrumbList />
+			<TicketCaption />
 
+			<Box
+				display="flex"
+				gap="10px"
+				margin="15px 0"
+				padding="10px"
+				borderRadius="2px"
+				border="solid 1px #ddd"
+			>
 				<Box
 					display="flex"
-					gap="10px"
-					margin="15px 0"
-					padding="10px"
-					borderRadius="2px"
-					border="solid 1px #ddd"
+					flexDirection="column"
+					justifyContent="space-between"
+					maxW="400px"
+					minW="400px"
+					width="100%"
 				>
+					<TicketSelect />
 					<Box
-						display="flex"
-						flexDirection="column"
-						justifyContent="space-between"
-						maxW="400px"
-						minW="400px"
+						alignItems="space-between"
 						width="100%"
+						height="40px"
+						borderRadius="2px"
+						backgroundColor="#111"
+						_hover={{
+							bg: '#08f',
+							color: '#fff',
+							transition: 'background-color 0.3s ease',
+						}}
 					>
-						<TicketSelect />
-						<Box
-							alignItems="space-between"
-							width="100%"
-							height="40px"
-							borderRadius="2px"
-							backgroundColor="#111"
-							_hover={{
-								bg: '#08f',
-								color: '#fff',
-								transition: 'background-color 0.3s ease',
-							}}
-						>
-							<Link href="/" passHref>
-								<Text
-									fontSize="20px"
-									lineHeight="2.0"
-									textAlign="center"
-									color="#fff"
-								>
-									キャンセル
-								</Text>
-							</Link>
-						</Box>
+						<Link href="/" passHref>
+							<Text
+								fontSize="20px"
+								lineHeight="2.0"
+								textAlign="center"
+								color="#fff"
+							>
+								キャンセル
+							</Text>
+						</Link>
 					</Box>
-					<Box
-						display={'flex'}
-						flexDirection={'column'}
-						justifyContent={'space-between'}
-						maxW="1070px"
-						minW="1070px"
-						width="100%"
-					>
-						{renderScreenComponent()}
+				</Box>
+				<Box
+					display={'flex'}
+					flexDirection={'column'}
+					justifyContent={'space-between'}
+					maxW="1070px"
+					minW="1070px"
+					width="100%"
+				>
+					{renderScreenComponent()}
+					<form onSubmit={handleSubmit}>
 						<Button
 							w="100%"
 							height="40px"
@@ -169,9 +143,9 @@ const Page = () => {
 						>
 							次へ進む
 						</Button>
-					</Box>
+					</form>
 				</Box>
-			</form>
+			</Box>
 		</Box>
 	);
 };
