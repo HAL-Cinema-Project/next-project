@@ -31,7 +31,7 @@ const Page = () => {
 	const { movie, loading, error } = useMovieId(movie_number);
 
 	useEffect(() => {
-		handleReservedSeatInfo(movie_number);
+		handleReservedSeatInfo(movie_number, time_number);
 	}, []);
 
 	const renderScreenComponent = () => {
