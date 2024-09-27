@@ -3,6 +3,7 @@ import { Box, Image, Link, useBreakpoint } from '@yamada-ui/react';
 import { Icon } from '@yamada-ui/fontawesome';
 import { faEnvelope, faPhone } from '@fortawesome/free-solid-svg-icons';
 import { HeaderButton, HeaderLogo, MenuButton, ScreenButton } from '../atom';
+import { InquiryButton } from '../atom/InquiryButton';
 
 export const Header = () => {
 	const breakpoint = useBreakpoint();
@@ -25,7 +26,8 @@ export const Header = () => {
 					alignItems="center"
 					gap="10px"
 				>
-					<ScreenButton />
+					{/* <ScreenButton /> */}
+					<InquiryButton />
 				</Box>
 			</Box>
 		</>
