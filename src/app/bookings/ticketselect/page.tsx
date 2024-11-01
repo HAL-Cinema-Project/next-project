@@ -60,7 +60,7 @@ const Page = () => {
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
-		router.push('/payment_method');
+		router.push('/bookings/ticketselect/payment_method');
 	};
 
 	return (
