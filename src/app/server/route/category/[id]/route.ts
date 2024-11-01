@@ -1,13 +1,9 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { NextResponse, NextRequest } from 'next/server';
-import { Pool } from 'pg';
-import bcrypt from 'bcrypt';
-import { error } from 'console';
+import { PrismaClient } from '@prisma/client';
 
 // db接続
-const pool = new Pool({
-	connectionString: process.env.DATABASE_URL,
-});
+const prisma = new PrismaClient();
 
 interface Category {
 	category_id: number;
@@ -18,30 +14,20 @@ export async function GET(
 	req: NextRequest,
 	{ params }: { params: { id: number } }
 ) {
-	const client = await pool.connect();
 	const { id } = params;
 
 	try {
 		// 単一カテゴリの取得
-		const ret = await client.query(
-			'SELECT * FROM "Category" WHERE category_id = $1',
-			[id]
-		);
-		if (ret.rows.length === 0) {
-			return NextResponse.json(
-				{ error: 'Category not found' },
-				{ status: 404 }
-			);
-		}
-		return NextResponse.json(ret.rows[0]);
+		const category = await prisma.category.findUnique({
+			where: { category_id: Number(id) },
+		});
+		return NextResponse.json(category);
 	} catch (error) {
 		console.error('Error executing query', error);
 		return NextResponse.json(
 			{ error: 'Error executing query' },
 			{ status: 500 }
 		);
-	} finally {
-		client.release();
 	}
 }
 
@@ -52,25 +38,19 @@ export async function PATCH(
 ) {
 	try {
 		const { category_name }: Category = await req.json();
-		const client = await pool.connect();
 		const { id } = params;
 		try {
-			const query = `
-            UPDATE "Category"
-            SET category_name = $1
-            WHERE category_id = $2
-            RETURNING *`;
-			const values = [category_name, id];
-			const result = await client.query(query, values);
-			return NextResponse.json(result.rows[0], { status: 201 });
+			const updatesCategory = await prisma.category.update({
+				where: { category_id: Number(id) },
+				data: { category_name },
+			});
+			return NextResponse.json(updatesCategory, { status: 201 });
 		} catch (error) {
 			console.error('Error executing query', error);
 			return NextResponse.json(
 				{ error: 'Error executing query' },
 				{ status: 500 }
 			);
-		} finally {
-			client.release();
 		}
 	} catch (error) {
 		console.error('Invalid request error', error);
@@ -88,20 +68,10 @@ export async function DELETE(
 ) {
 	try {
 		const { id } = params;
-		const client = await pool.connect();
 		try {
-			const query = `
-            DELETE FROM "Category"
-            WHERE category_id = $1
-            RETURNING *`;
-			const values = [id];
-			const result = await client.query(query, values);
-			if (result.rowCount == 0) {
-				return NextResponse.json(
-					{ error: 'Category not found' },
-					{ status: 404 }
-				);
-			}
+			const query = await prisma.category.delete({
+				where: { category_id: Number(id) },
+			});
 			return NextResponse.json({ message: 'Category deleted successfully' });
 		} catch (error) {
 			console.error('Error executing query', error);
@@ -109,8 +79,6 @@ export async function DELETE(
 				{ error: 'Error executing query' },
 				{ status: 500 }
 			);
-		} finally {
-			client.release();
 		}
 	} catch (error) {
 		console.error('Invalid request error', error);
