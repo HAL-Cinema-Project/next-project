@@ -174,3 +174,11 @@ model Cinema{
   cinema_id Int @id @default(autoincrement())
   cinema_region String
 }
+
+// inquiryテーブル
+model Inquiry{
+  inquiry_id Int @id @default(autoincrement())
+  inquiry_subject String
+  inquiry_content String
+  inquiry_email String
+}
