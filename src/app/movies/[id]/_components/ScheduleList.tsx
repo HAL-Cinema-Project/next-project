@@ -24,6 +24,13 @@ interface MovieTime {
 	screen_id: number;
 }
 
+interface Schedule {
+	schedule_id: number;
+	availableSeats: number; // 残り座席数
+	totalcapacity: number;
+	totalReservations: number; // 総予約数
+}
+
 export const ScheduleList = (props: scheduleType) => {
 	const [screen, setScreen] = useState<Screen[]>([]);
 	const [time, setTime] = useState<MovieTime[]>([]);
