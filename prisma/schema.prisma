@@ -173,6 +173,11 @@ model UserSchedule {
 model Cinema{
   cinema_id Int @id @default(autoincrement())
   cinema_region String
+  cinema_address String
+  cinema_tel String
+  cinema_email String
+  cinema_detail String
+  cinema_image String
 }
 
 // inquiryテーブル
