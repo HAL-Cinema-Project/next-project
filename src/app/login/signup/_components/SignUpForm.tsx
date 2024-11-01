@@ -48,6 +48,7 @@ export const SignUpForm = () => {
 			console.error(e);
 		}
 	};
+
 	return (
 		<>
 			<Box
