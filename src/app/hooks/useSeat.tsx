@@ -26,9 +26,14 @@ export const useSeat = () => {
 	};
 	// console.log(reservedSeatInfo)
 
-	const handleReservedSeatInfo = async (movieId: number): Promise<void> => {
+	const handleReservedSeatInfo = async (
+		movieId: number,
+		time_id: number
+	): Promise<void> => {
 		try {
-			const response = await fetch(`../server/route/schedule/movie/${movieId}`);
+			const response = await fetch(
+				`../server/route/schedule/movie?movie_id=${movieId}&time_id=${time_id}`
+			);
 			if (!response.ok) {
 				throw new Error(`HTTP error! status: ${response.status}`);
 			}
