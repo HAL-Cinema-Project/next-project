@@ -1,14 +1,10 @@
 // screenモデルのAPIを定義
+import { PrismaClient } from '@prisma/client';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { NextResponse, NextRequest } from 'next/server';
-import { Pool } from 'pg';
-import bcrypt from 'bcrypt';
-import { resourceLimits } from 'worker_threads';
 
 // db接続
-const pool = new Pool({
-	connectionString: process.env.DATABASE_URL,
-});
+const prisma = new PrismaClient();
 
 interface Screen {
 	screen_id: number;
@@ -17,18 +13,15 @@ interface Screen {
 
 // GETメソッドの処理
 export async function GET() {
-	const client = await pool.connect();
 	try {
-		const ret = await client.query('SELECT * FROM "Screen"', []);
-		return NextResponse.json(ret.rows);
+		const ret = await prisma.screen.findMany();
+		return NextResponse.json(ret);
 	} catch (error) {
 		console.error('Error executing query', error);
 		return NextResponse.json(
 			{ error: 'Error executing query' },
 			{ status: 500 }
 		);
-	} finally {
-		client.release();
 	}
 }
 
@@ -36,23 +29,19 @@ export async function GET() {
 export async function POST(req: NextRequest) {
 	try {
 		const { screen_capacity }: Screen = await req.json();
-		const client = await pool.connect();
 		try {
-			const query = `
-            INSERT INTO "Screen" (screen_capacity)
-            VALUES ($1)
-            RETURNING *`;
-			const values = [screen_capacity];
-			const result = await client.query(query, values);
-			return NextResponse.json(result.rows[0], { status: 201 });
+			const newScreen = await prisma.screen.create({
+				data: {
+					screen_capacity,
+				},
+			});
+			return NextResponse.json(newScreen, { status: 201 });
 		} catch (error) {
 			console.error('Error executing query', error);
 			return NextResponse.json(
 				{ error: 'Error executing query' },
 				{ status: 500 }
 			);
-		} finally {
-			client.release();
 		}
 	} catch (error) {
 		console.error('Invalid request error', error);
