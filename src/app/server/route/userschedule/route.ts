@@ -1,32 +1,26 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { PrismaClient } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
-import { Pool } from 'pg';
 
 // DB接続
-const pool = new Pool({
-	connectionString: process.env.DATABASE_URL,
-});
+const prisma = new PrismaClient();
 
 interface UserSchedule {
 	user_schedule_id: number;
-	user_id: number;
+	user_id: string;
 	schedule_id: number;
 }
 
 // GETメソッドの処理 (全件取得)
 export async function GET() {
-	const client = await pool.connect();
 	try {
-		const ret = await client.query('SELECT * FROM "UserSchedule"', []);
-		return NextResponse.json(ret.rows);
+		const ret = await prisma.userSchedule.findMany();
+		return NextResponse.json(ret);
 	} catch (error) {
 		console.error('Error executing query', error);
 		return NextResponse.json(
 			{ error: 'Error executing query' },
 			{ status: 500 }
 		);
-	} finally {
-		client.release();
 	}
 }
 
@@ -47,44 +41,25 @@ export async function POST(req: NextRequest) {
 			);
 		}
 
-		const client = await pool.connect();
-		try {
-			// トランザクションを開始
-			await client.query('BEGIN');
+		// トランザクションで複数のレコードを挿入
+		const insertedRows = await prisma.$transaction(
+			schedule_ids.map((schedule_id) =>
+				prisma.userSchedule.create({
+					data: {
+						user_id: user_id,
+						schedule_id: schedule_id,
+					},
+				})
+			)
+		);
 
-			// すべてのschedule_idに対してINSERTを行う
-			const insertedRows = [];
-			for (const schedule_id of schedule_ids) {
-				const query = `
-					INSERT INTO "UserSchedule" (user_id, schedule_id)
-					VALUES ($1, $2)
-					RETURNING *`;
-				const values = [user_id, schedule_id];
-				const result = await client.query(query, values);
-				insertedRows.push(result.rows[0]);
-			}
-
-			// トランザクションをコミット
-			await client.query('COMMIT');
-
-			// 成功した挿入データをレスポンスとして返す
-			return NextResponse.json(insertedRows, { status: 201 });
-		} catch (error) {
-			// エラーが発生した場合はロールバック
-			await client.query('ROLLBACK');
-			console.error('Error executing query', error);
-			return NextResponse.json(
-				{ error: 'Error executing query' },
-				{ status: 500 }
-			);
-		} finally {
-			client.release();
-		}
+		// 成功した挿入データをレスポンスとして返す
+		return NextResponse.json(insertedRows, { status: 201 });
 	} catch (error) {
-		console.error('Invalid request error', error);
+		console.error('Error executing query', error);
 		return NextResponse.json(
-			{ error: 'Invalid request error' },
-			{ status: 400 }
+			{ error: 'Error executing query' },
+			{ status: 500 }
 		);
 	}
 }
