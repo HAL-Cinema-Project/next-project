@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 
+// db接続
 const prisma = new PrismaClient();
 
 interface Inquiry {
