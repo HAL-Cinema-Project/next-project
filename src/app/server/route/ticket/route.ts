@@ -1,10 +1,10 @@
+import { PrismaClient } from '@prisma/client';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
 
-const pool = new Pool({
-	connectionString: process.env.DATABASE_URL,
-});
+//db接続
+const prisma = new PrismaClient();
 
 interface Ticket {
 	ticket_id: string;
@@ -12,11 +12,10 @@ interface Ticket {
 }
 
 export async function GET() {
-	const client = await pool.connect();
 	try {
-		const ret = await client.query('SELECT * FROM "Ticket"', []);
+		const ret = await prisma.ticket.findMany();
 
-		const ticketTypes = ret.rows.map((ticket: Ticket) => {
+		const ticketTypes = ret.map((ticket: Ticket) => {
 			let type = '';
 			if (ticket.ticket_id == '1') {
 				type = 'normal';
@@ -36,8 +35,6 @@ export async function GET() {
 			{ error: 'Error executing query' },
 			{ status: 500 }
 		);
-	} finally {
-		client.release();
 	}
 }
 
@@ -45,23 +42,19 @@ export async function GET() {
 export async function POST(req: NextRequest) {
 	try {
 		const { ticket_price }: Ticket = await req.json();
-		const client = await pool.connect();
 		try {
-			const query = `
-            INSERT INTO "Ticket" (ticket_price)
-            VALUES ($1)
-            RETURNING *`;
-			const values = [ticket_price];
-			const result = await client.query(query, values);
-			return NextResponse.json(result.rows[0], { status: 201 });
+			const newTicket = await prisma.ticket.create({
+				data: {
+					ticket_price,
+				},
+			});
+			return NextResponse.json(newTicket, { status: 201 });
 		} catch (error) {
 			console.error('Error executing query', error);
 			return NextResponse.json(
 				{ error: 'Error executing query' },
 				{ status: 500 }
 			);
-		} finally {
-			client.release();
 		}
 	} catch (error) {
 		console.error('Invalid request error', error);
