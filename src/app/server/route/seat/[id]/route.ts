@@ -1,12 +1,9 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { NextResponse, NextRequest } from 'next/server';
-import { Pool } from 'pg';
-import bcrypt from 'bcrypt';
-import { error } from 'console';
+import { PrismaClient } from '@prisma/client';
 
-const pool = new Pool({
-	connectionString: process.env.DATABASE_URL,
-});
+// db接続
+const prisma = new PrismaClient();
 
 interface Seat {
 	seat_id: number;
@@ -18,38 +15,26 @@ export async function GET(
 	req: NextRequest,
 	{ params }: { params: { id: string } }
 ) {
-	const client = await pool.connect();
 	const ids = params.id.split(',').map((id) => parseInt(id, 10));
 
 	try {
-		const seats = await Promise.all(
-			ids.map(async (id) => {
-				const ret = await client.query(
-					'SELECT * FROM "Seat" WHERE seat_id = $1',
-					[id]
-				);
-				if (ret.rows.length === 0) {
-					return null;
-				}
-				return ret.rows[0];
-			})
-		);
+		const seats = await prisma.seat.findMany({
+			where: {
+				seat_id: { in: ids },
+			},
+		});
 
-		const filteredSeats = seats.filter((seat) => seat !== null);
-
-		if (filteredSeats.length === 0) {
+		if (seats.length === 0) {
 			return NextResponse.json({ error: 'seat not found' }, { status: 404 });
 		}
 
-		return NextResponse.json(filteredSeats);
+		return NextResponse.json(seats);
 	} catch (error) {
 		console.error('Error executing query', error);
 		return NextResponse.json(
 			{ error: 'Error executing query' },
 			{ status: 500 }
 		);
-	} finally {
-		client.release();
 	}
 }
 
@@ -60,31 +45,19 @@ export async function PATCH(
 ) {
 	try {
 		const { seat_point }: Seat = await req.json();
-		const client = await pool.connect();
 		const { id } = params;
-		try {
-			const query = `
-            UPDATE "Seat"
-            SET seat_point = $1
-            WHERE seat_id = $2
-            RETURNING *`;
-			const values = [seat_point, id];
-			const result = await client.query(query, values);
-			return NextResponse.json(result.rows[0], { status: 201 });
-		} catch (error) {
-			console.error('Error executing query', error);
-			return NextResponse.json(
-				{ error: 'Error executing query' },
-				{ status: 500 }
-			);
-		} finally {
-			client.release();
-		}
+
+		const updatedSeat = await prisma.seat.update({
+			where: { seat_id: id },
+			data: { seat_point },
+		});
+
+		return NextResponse.json(updatedSeat, { status: 201 });
 	} catch (error) {
-		console.error('Invalid request error', error);
+		console.error('Error executing query', error);
 		return NextResponse.json(
-			{ error: 'Invalid request error' },
-			{ status: 400 }
+			{ error: 'Error executing query' },
+			{ status: 500 }
 		);
 	}
 }
@@ -96,25 +69,20 @@ export async function DELETE(
 ) {
 	try {
 		const { id } = params;
-		const client = await pool.connect();
-		try {
-			const query = `
-            DELETE FROM "Seat"
-            WHERE seat_id = $1
-            RETURNING *`;
-			const values = [id];
-			const result = await client.query(query, values);
-			if (result.rowCount == 0) {
-				return NextResponse.json({ error: 'Seat not found' }, { status: 404 });
-			}
-			return NextResponse.json({ message: 'Seat delete successfully' });
-		} finally {
-			client.release();
-		}
+
+		const deletedSeat = await prisma.seat.delete({
+			where: { seat_id: id },
+		});
+
+		return NextResponse.json({
+			message: 'Seat deleted successfully',
+			deletedSeat,
+		});
 	} catch (error) {
-		console.error('Invalid request error', error);
+		console.error('Error executing query', error);
+
 		return NextResponse.json(
-			{ error: 'Invalid request error' },
+			{ error: 'Error executing query' },
 			{ status: 500 }
 		);
 	}
