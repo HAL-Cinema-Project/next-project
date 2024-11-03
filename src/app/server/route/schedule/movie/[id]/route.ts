@@ -1,10 +1,10 @@
+import { PrismaClient } from '@prisma/client';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
 
-const pool = new Pool({
-	connectionString: process.env.DATABASE_URL,
-});
+// db接続
+const prisma = new PrismaClient();
 
 interface Schedule {
 	schedule_id: number;
@@ -19,25 +19,21 @@ export async function GET(
 	req: NextRequest,
 	{ params }: { params: { id: number } }
 ) {
-	const client = await pool.connect();
 	const { id } = params;
 
 	try {
-		const ret = await client.query<Schedule>(
-			'SELECT * FROM "Schedule" WHERE movie_id = $1',
-			[id]
-		);
-		if (ret.rows.length === 0) {
+		const ret = await prisma.schedule.findMany({
+			where: { movie_id: Number(id) },
+		});
+		if (ret.length === 0) {
 			return NextResponse.json([]);
 		}
-		return NextResponse.json(ret.rows);
+		return NextResponse.json(ret);
 	} catch (error) {
 		console.error('Error executing query', error);
 		return NextResponse.json(
 			{ error: 'Error executing query' },
 			{ status: 500 }
 		);
-	} finally {
-		client.release();
 	}
 }
