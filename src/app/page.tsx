@@ -1,5 +1,5 @@
 'use client';
-import { Box, useBreakpoint, AspectRatio } from '@yamada-ui/react';
+import { Box, useBreakpoint, AspectRatio, Center } from '@yamada-ui/react';
 import React, { useEffect, useState } from 'react';
 import {
 	TopSectionContainer,
@@ -14,6 +14,8 @@ import { ServiceList } from './_components/block/ServiceList';
 import { fetchMovie } from './hooks/useMovie';
 import Link from 'next/link';
 import Placeholder from './movies/_components/Placeholder';
+import { fetchCinema } from './hooks/useCinema';
+import TheaterCard from './_components/block/TheaterCard';
 
 interface Movie {
 	movie_id: number;
@@ -21,8 +23,16 @@ interface Movie {
 	movie_name: string;
 }
 
+interface Cinema {
+	cinema_id: number;
+	cinema_image: string;
+	cinema_region: string;
+	cinema_detail: string;
+}
+
 export default function Page() {
 	const [movies, setMovies] = useState<Movie[]>([]);
+	const [cinemas, setCinemas] = useState<Cinema[]>([]);
 	const [loading, setLoading] = useState(true);
 	const breakpoint = useBreakpoint();
 
@@ -38,6 +48,21 @@ export default function Page() {
 			setLoading(false);
 		};
 		fetchData();
+	}, []);
+
+	useEffect(() => {
+		const fetchCinemadata = async () => {
+			const cinemadata = await fetchCinema();
+			const formattedCinemas: Cinema[] = cinemadata.map((cinema: any) => ({
+				cinema_id: cinema.cinema_id,
+				cinema_image: cinema.cinema_image,
+				cinema_detail: cinema.cinema_detail,
+				cinema_region: cinema.cinema_region,
+			}));
+			setCinemas(formattedCinemas);
+			setLoading(false);
+		};
+		fetchCinemadata();
 	}, []);
 
 	const getContainerWidth = (breakpoint: string) => {
@@ -90,7 +115,32 @@ export default function Page() {
 
 			<TopSectionContainer>
 				<TopSectionHeader title="劇場案内" link="/theaters" />
-				<TheaterList />
+				<Box
+					flexWrap="wrap"
+					display="flex"
+					justifyContent="space-between"
+					alignItems="center"
+					marginTop="15px"
+					gap="15px"
+				>
+					{loading
+						? Array.from({ length: 3 }).map((_, index) => (
+								<Box key={index} width={getContainerWidth(breakpoint)}>
+									<AspectRatio ratio={5 / 7}>
+										<Placeholder width="100%" height="100%" />
+									</AspectRatio>
+								</Box>
+							))
+						: cinemas.map((data, index) => (
+								<TheaterCard
+									key={index}
+									id={data.cinema_id}
+									theaterImage={data.cinema_image}
+									theaterName={data.cinema_region}
+									theaterInformation={data.cinema_detail}
+								/>
+							))}
+				</Box>
 			</TopSectionContainer>
 
 			<TopSectionContainer>
