@@ -7,6 +7,7 @@ import {
 	Textarea,
 	useBreakpoint,
 } from '@yamada-ui/react';
+import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 
 export const InquiryForm = () => {
@@ -14,7 +15,35 @@ export const InquiryForm = () => {
 	const [email, setEmail] = useState('');
 	const [subject, setSubject] = useState('');
 	const [maintext, setMaintext] = useState('');
+	const router = useRouter();
 
+	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		const formData = new FormData(e.currentTarget);
+		const data = {
+			inquiry_subject: formData.get('subject'),
+			inquiry_content: formData.get('maintext'),
+			inquiry_email: formData.get('email'),
+		};
+		try {
+			const response = await fetch('/server/route/inquiry', {
+				method: 'POST',
+				headers: {
+					'Content-type': 'application/json',
+				},
+				body: JSON.stringify(data),
+			});
+			if (response.ok) {
+				const json = await response.json();
+				console.log(json);
+				router.push('/');
+			} else {
+				console.error('HTTP-Error: ' + response.status);
+			}
+		} catch (e) {
+			console.error(e);
+		}
+	};
 	return (
 		<>
 			<Box
@@ -24,7 +53,7 @@ export const InquiryForm = () => {
 				<Text textAlign="center" fontSize="1.5rem" fontWeight="bold">
 					お問い合わせ
 				</Text>
-				<form action="">
+				<form onSubmit={handleSubmit}>
 					<Box m="20px 0 ">
 						<Text>メールアドレス</Text>
 						<Input
