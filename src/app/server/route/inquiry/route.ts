@@ -4,7 +4,9 @@ import { PrismaClient } from '@prisma/client';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 //db接続
-const prisma = new PrismaClient();
+const pool = new Pool({
+	connectionString: process.env.DATABASE_URL,
+});
 
 interface Inquiry {
 	inquiry_id: number;
@@ -15,9 +17,10 @@ interface Inquiry {
 
 //getメソッド
 export async function GET() {
+	const client = await pool.connect();
 	try {
-		const categories = await prisma.inquiry.findMany();
-		return NextResponse.json(categories);
+		const ret = await client.query('SELECT * FROM "Inquiry"', []);
+		return NextResponse.json(ret.rows);
 	} catch (error) {
 		console.error('Error fetching categories', error);
 		return NextResponse.json({ error: 'Error fetching categories' });
@@ -30,15 +33,16 @@ export async function POST(req: NextRequest) {
 		const { inquiry_subject, inquiry_content, inquiry_email }: Inquiry =
 			await req.json();
 
-		const newInquiry = await prisma.inquiry.create({
-			data: {
-				inquiry_subject,
-				inquiry_content,
-				inquiry_email,
-			},
-		});
+		const client = await pool.connect();
 
-		return NextResponse.json(newInquiry);
+		const query = `
+		INSERT INTO "Inquiry" (inquiry_subject, inquiry_content, inquiry_email)
+		VALUES ($1,$2,$3,$4,$5,$6)
+		RETURNING *`;
+		const values = [inquiry_subject, inquiry_content, inquiry_email];
+		const result = await client.query(query, values);
+
+		return NextResponse.json(result.rows[0], { status: 201 });
 	} catch (error) {
 		console.error('Error creating category', error);
 		return NextResponse.json({ error: 'Error creating category' });

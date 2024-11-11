@@ -1,10 +1,10 @@
-import { PrismaClient } from '@prisma/client';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
 
-// db接続
-const prisma = new PrismaClient();
+const pool = new Pool({
+	connectionString: process.env.DATABASE_URL,
+});
 
 interface Schedule {
 	schedule_id: number;
@@ -17,21 +17,27 @@ interface Schedule {
 // movie_idを使用したデータ単体取得
 export async function GET(
 	req: NextRequest,
-	{ params }: { params: { time_id: number } } // time_id を正しく受け取る
+	{ params }: { params: { id: number } }
 ) {
-	const { time_id } = params;
+	const client = await pool.connect();
+	const { id } = params;
 
 	try {
-		// time_idが数値として存在するかを確認
-		const schedules = await prisma.schedule.findMany({
-			where: { time_id: Number(time_id) }, // time_idをフィルタとして使用
-		});
-		return NextResponse.json(schedules);
+		const ret = await client.query<Schedule>(
+			'SELECT * FROM "Schedule" WHERE time_id = $1',
+			[id]
+		);
+		if (ret.rows.length === 0) {
+			return NextResponse.json([]);
+		}
+		return NextResponse.json(ret.rows);
 	} catch (error) {
 		console.error('Error executing query', error);
 		return NextResponse.json(
 			{ error: 'Error executing query' },
 			{ status: 500 }
 		);
+	} finally {
+		client.release();
 	}
 }

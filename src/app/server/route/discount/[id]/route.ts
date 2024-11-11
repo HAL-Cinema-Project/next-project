@@ -3,10 +3,11 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { Pool } from 'pg';
 import bcrypt from 'bcrypt';
 import { error } from 'console';
-import { PrismaClient } from '@prisma/client';
 
 // db接続
-const prisma = new PrismaClient();
+const pool = new Pool({
+	connectionString: process.env.DATABASE_URL,
+});
 
 interface Discount {
 	discount_id: number;
@@ -18,21 +19,25 @@ export async function GET(
 	req: NextRequest,
 	{ params }: { params: { id: number } }
 ) {
+	const client = await pool.connect();
 	const { id } = params;
 
 	try {
-		const ret = await prisma.discount.findUnique({
-			where: {
-				discount_id: Number(id),
-			},
-		});
-		return NextResponse.json(ret);
+		const ret = await client.query('SELECT * FROM "Cash" WHERE cash_id = $1', [
+			id,
+		]);
+		if (ret.rows.length === 0) {
+			return NextResponse.json({ error: 'Cash not found' }, { status: 404 });
+		}
+		return NextResponse.json(ret.rows[0]);
 	} catch (error) {
 		console.error('Error executing query', error);
 		return NextResponse.json(
 			{ error: 'Error executing query' },
 			{ status: 500 }
 		);
+	} finally {
+		client.release();
 	}
 }
 
@@ -43,19 +48,25 @@ export async function PATCH(
 ) {
 	try {
 		const { discount_id, discount_type }: Discount = await req.json();
+		const client = await pool.connect();
 		const { id } = params;
 		try {
-			const updatedDiscount = await prisma.discount.update({
-				where: { discount_id: Number(id) },
-				data: { discount_type },
-			});
-			return NextResponse.json(updatedDiscount, { status: 201 });
+			const query = `
+            UPDATE "Cash"
+            SET movie_type = $1
+            WHERE discount_id = $2
+            RETURNING *`;
+			const values = [discount_id, discount_type, id];
+			const result = await client.query(query, values);
+			return NextResponse.json(result.rows[0], { status: 201 });
 		} catch (error) {
 			console.error('Error executing query', error);
 			return NextResponse.json(
 				{ error: 'Error executing query' },
 				{ status: 500 }
 			);
+		} finally {
+			client.release();
 		}
 	} catch (error) {
 		console.error('Invalid request error', error);
@@ -73,17 +84,23 @@ export async function DELETE(
 ) {
 	try {
 		const { id } = params;
+		const client = await pool.connect();
 		try {
-			const deletedinquiry = await prisma.discount.delete({
-				where: { discount_id: Number(id) },
-			});
+			const query = `
+            DELETE FROM "Discount"
+            WHERE discount_id = $1
+            RETURNING *`;
+			const values = [id];
+			const result = await client.query(query, values);
+			if (result.rowCount == 0) {
+				return NextResponse.json(
+					{ error: 'Discount not found' },
+					{ status: 404 }
+				);
+			}
 			return NextResponse.json({ message: 'Discount delete successfully' });
-		} catch (error) {
-			console.error('Error deleting inquiry', error);
-			return NextResponse.json(
-				{ error: 'Error deleting inquiry' },
-				{ status: 500 }
-			);
+		} finally {
+			client.release();
 		}
 	} catch (error) {
 		console.error('Invalid request error', error);

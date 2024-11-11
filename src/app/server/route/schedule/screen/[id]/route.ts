@@ -1,8 +1,10 @@
-import { PrismaClient } from '@prisma/client';
+import { NextApiRequest, NextApiResponse } from 'next';
 import { NextRequest, NextResponse } from 'next/server';
+import { Pool } from 'pg';
 
-// db接続
-const prisma = new PrismaClient();
+const pool = new Pool({
+	connectionString: process.env.DATABASE_URL,
+});
 
 interface Schedule {
 	schedule_id: number;
@@ -18,46 +20,31 @@ export async function GET(
 	req: NextRequest,
 	{ params }: { params: { id: number } }
 ) {
+	const client = await pool.connect();
 	const { id } = params;
 
 	try {
-		// Prisma で Schedule と Screen を JOIN し、screen_capacity を取得
-		const schedules = await prisma.schedule.findMany({
-			where: { screen_id: Number(id) },
-			select: {
-				schedule_id: true,
-				screen_id: true,
-				movie_id: true,
-				seat_id: true,
-				time_id: true,
-				screen: {
-					select: {
-						screen_capacity: true,
-					},
-				},
-			},
-		});
+		// Schedule と Screen を JOIN して screen_capacity を取得
+		const ret = await client.query<Schedule>(
+			`SELECT s.schedule_id, s.screen_id, s.movie_id, s.seat_id, s.time_id, sc.screen_capacity 
+			 FROM "Schedule" s
+			 JOIN "Screen" sc ON s.screen_id = sc.screen_id
+			 WHERE s.screen_id = $1`,
+			[id]
+		);
 
-		if (schedules.length === 0) {
+		if (ret.rows.length === 0) {
 			return NextResponse.json([]);
 		}
 
-		// screen_capacity を含む形にデータを加工
-		const formattedSchedules = schedules.map((schedule) => ({
-			schedule_id: schedule.schedule_id,
-			screen_id: schedule.screen_id,
-			movie_id: schedule.movie_id,
-			seat_id: schedule.seat_id,
-			time_id: schedule.time_id,
-			screen_capacity: schedule.screen.screen_capacity,
-		}));
-
-		return NextResponse.json(formattedSchedules);
+		return NextResponse.json(ret.rows);
 	} catch (error) {
 		console.error('Error executing query', error);
 		return NextResponse.json(
 			{ error: 'Error executing query' },
 			{ status: 500 }
 		);
+	} finally {
+		client.release();
 	}
 }

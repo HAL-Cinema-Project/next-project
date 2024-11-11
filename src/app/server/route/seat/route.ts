@@ -2,10 +2,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { Pool } from 'pg';
-import { PrismaClient } from '@prisma/client';
 
 // db接続情報
-const prisma = new PrismaClient();
+const pool = new Pool({
+	connectionString: process.env.DATABASE_URL,
+});
 
 interface Seat {
 	seat_id: number;
@@ -14,15 +15,18 @@ interface Seat {
 
 // GETメソッドの処理
 export async function GET() {
+	const client = await pool.connect();
 	try {
-		const ret = await prisma.seat.findMany();
-		return NextResponse.json(ret);
+		const ret = await client.query('SELECT * FROM "Seat"', []);
+		return NextResponse.json(ret.rows);
 	} catch (error) {
 		console.error('Error executing query', error);
 		return NextResponse.json(
 			{ error: 'Error executing query' },
 			{ status: 500 }
 		);
+	} finally {
+		client.release();
 	}
 }
 
@@ -30,19 +34,23 @@ export async function GET() {
 export async function POST(req: NextRequest) {
 	try {
 		const { seat_point }: Seat = await req.json();
+		const client = await pool.connect();
 		try {
-			const newSeat = await prisma.seat.create({
-				data: {
-					seat_point,
-				},
-			});
-			return NextResponse.json(newSeat, { status: 201 });
+			const query = `
+            INSERT INTO "Seat" (seat_point)
+            VALUES ($1)
+            RETURNING *`;
+			const values = [seat_point];
+			const result = await client.query(query, values);
+			return NextResponse.json(result.rows[0], { status: 201 });
 		} catch (error) {
 			console.error('Error executing query', error);
 			return NextResponse.json(
 				{ error: 'Error executing query' },
 				{ status: 500 }
 			);
+		} finally {
+			client.release();
 		}
 	} catch (error) {
 		console.error('Invalid request error', error);

@@ -1,8 +1,11 @@
 import { PrismaClient } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
+import { Pool } from 'pg';
 
 // db接続
-const prisma = new PrismaClient();
+const pool = new Pool({
+	connectionString: process.env.DATABASE_URL,
+});
 
 interface Cinema {
 	cinema_id: number;
@@ -19,14 +22,18 @@ export async function GET(
 	req: NextRequest,
 	{ params }: { params: { id: number } }
 ) {
+	const client = await pool.connect();
 	const { id } = params;
 
 	try {
-		const inquiry = await prisma.cinema.findUnique({
-			where: { cinema_id: Number(id) },
-		});
-
-		return NextResponse.json(inquiry);
+		const ret = await client.query(
+			'SELECT * FROM "Cinema" WHERE cinema_id = $1',
+			[id]
+		);
+		if (ret.rows.length === 0) {
+			return NextResponse.json({ error: 'Movie not found' }, { status: 404 });
+		}
+		return NextResponse.json(ret.rows[0]);
 	} catch (error) {
 		console.error('Error fetching inquiry', error);
 		return NextResponse.json(
@@ -52,20 +59,39 @@ export async function PATCH(
 			cinema_region,
 			cinema_tel,
 		}: Cinema = await req.json();
-
-		const updatedInquiry = await prisma.cinema.update({
-			where: { cinema_id: Number(id) },
-			data: {
+		const client = await pool.connect();
+		const { id } = params;
+		try {
+			const query = `
+            UPDATE "Movie"
+            SET cinema_region = $1,
+            cinema_address = $2,
+            cinema_detail = $3,
+            cinema_email = $4,
+			cinema_tel = $5,
+			cinema_image = $6,
+            WHERE cinema_id = $7
+            RETURNING *`;
+			const values = [
+				cinema_region,
 				cinema_address,
 				cinema_detail,
 				cinema_email,
-				cinema_image,
-				cinema_region,
 				cinema_tel,
-			},
-		});
-
-		return NextResponse.json(updatedInquiry, { status: 201 });
+				cinema_image,
+				id,
+			];
+			const result = await client.query(query, values);
+			return NextResponse.json(result.rows[0], { status: 201 });
+		} catch (error) {
+			console.error('Error executing query', error);
+			return NextResponse.json(
+				{ error: 'Error executing query' },
+				{ status: 500 }
+			);
+		} finally {
+			client.release();
+		}
 	} catch (error) {
 		console.error('Error updating inquiry', error);
 		return NextResponse.json(
@@ -80,18 +106,33 @@ export async function DELETE(
 	req: NextRequest,
 	{ params }: { params: { id: number } }
 ) {
-	const { id } = params;
-
 	try {
-		const deletedinquiry = await prisma.cinema.delete({
-			where: { cinema_id: Number(id) },
-		});
-
-		return NextResponse.json({ message: 'inquiry deleted successfully' });
+		const { id } = params;
+		const client = await pool.connect();
+		try {
+			const query = `
+            DELETE FROM "Cinema"
+            WHERE cinema_id = $1
+            RETURNING *`;
+			const values = [id];
+			const result = await client.query(query, values);
+			if (result.rowCount == 0) {
+				return NextResponse.json({ error: 'Movie not found' }, { status: 404 });
+			}
+			return NextResponse.json({ message: 'Movie deleted successfully' });
+		} catch (error) {
+			console.error('Error executing query', error);
+			return NextResponse.json(
+				{ error: 'Error executing query' },
+				{ status: 500 }
+			);
+		} finally {
+			client.release();
+		}
 	} catch (error) {
-		console.error('Error deleting inquiry', error);
+		console.error('Invalid request error', error);
 		return NextResponse.json(
-			{ error: 'Error deleting inquiry' },
+			{ error: 'Invalid request error' },
 			{ status: 500 }
 		);
 	}

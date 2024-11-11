@@ -110,7 +110,7 @@ const Page = () => {
 								borderRadius="2px"
 								backgroundColor="#fff"
 							>
-								<Box position="relative" width="100%" paddingBottom="100%">
+								<Box position="relative" width="100%">
 									<Image
 										src={data.cinema_image}
 										alt={data.cinema_region}
