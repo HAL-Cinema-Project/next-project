@@ -2,9 +2,12 @@
 import { PrismaClient } from '@prisma/client';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { NextResponse, NextRequest } from 'next/server';
+import { Pool } from 'pg';
 
 // db接続
-const prisma = new PrismaClient();
+const pool = new Pool({
+	connectionString: process.env.DATABASE_URL,
+});
 
 interface Category {
 	category_id: number;
@@ -13,15 +16,13 @@ interface Category {
 
 // getメソッド
 export async function GET() {
+	const client = await pool.connect();
 	try {
-		const ret = await prisma.category.findMany();
-		return NextResponse.json(ret);
+		const ret = await client.query('SELECT * FROM "Category"', []);
+		return NextResponse.json(ret.rows);
 	} catch (error) {
-		console.error('Error executing query', error);
-		return NextResponse.json(
-			{ error: 'Error executing query' },
-			{ status: 500 }
-		);
+		console.error('Error fetching categories', error);
+		return NextResponse.json({ error: 'Error fetching categories' });
 	}
 }
 
@@ -30,10 +31,16 @@ export async function POST(req: NextRequest) {
 	try {
 		const { category_name }: Category = await req.json();
 		try {
-			const query = await prisma.category.create({
-				data: { category_name },
-			});
-			return NextResponse.json(query, { status: 201 });
+			const client = await pool.connect();
+
+			const query = `
+			INSERT INTO "Category" (category_name)
+			VALUES ($1,$2,$3,$4,$5,$6)
+			RETURNING *`;
+			const values = [category_name];
+			const result = await client.query(query, values);
+
+			return NextResponse.json(result.rows[0], { status: 201 });
 		} catch (error) {
 			console.error('Error executing query', error);
 			return NextResponse.json(

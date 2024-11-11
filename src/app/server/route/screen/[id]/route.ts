@@ -1,9 +1,13 @@
-import { PrismaClient } from '@prisma/client';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { NextRequest, NextResponse } from 'next/server';
+import { Pool } from 'pg';
+import bcrypt from 'bcrypt';
+import { error } from 'console';
 
 // db接続
-const prisma = new PrismaClient();
+const pool = new Pool({
+	connectionString: process.env.DATABASE_URL,
+});
 
 interface Screen {
 	screen_id: number;
@@ -15,19 +19,26 @@ export async function GET(
 	req: NextRequest,
 	{ params }: { params: { id: number } }
 ) {
+	const client = await pool.connect();
 	const { id } = params;
 
 	try {
-		const ret = await prisma.screen.findUnique({
-			where: { screen_id: Number(id) },
-		});
-		return NextResponse.json(ret);
+		const ret = await client.query(
+			'SELECT * FROM "Screen" WHERE screen_id = $1',
+			[id]
+		);
+		if (ret.rows.length === 0) {
+			return NextResponse.json({ error: 'Screen not found' }, { status: 404 });
+		}
+		return NextResponse.json(ret.rows[0]);
 	} catch (error) {
 		console.error('Error executing query', error);
 		return NextResponse.json(
 			{ error: 'Error executing query' },
 			{ status: 500 }
 		);
+	} finally {
+		client.release();
 	}
 }
 
@@ -38,19 +49,25 @@ export async function PATCH(
 ) {
 	try {
 		const { screen_capacity }: Screen = await req.json();
+		const client = await pool.connect();
 		const { id } = params;
 		try {
-			const updateScreen = await prisma.screen.update({
-				where: { screen_id: Number(id) },
-				data: { screen_capacity },
-			});
-			return NextResponse.json(updateScreen, { status: 201 });
+			const query = `
+            UPDATE "Screen"
+            SET screen_capacity = $1
+            WHERE screen_id = $2
+            RETURNING *`;
+			const values = [screen_capacity, id];
+			const result = await client.query(query, values);
+			return NextResponse.json(result.rows[0], { status: 201 });
 		} catch (error) {
 			console.error('Error executing query', error);
 			return NextResponse.json(
 				{ error: 'Error executing query' },
 				{ status: 500 }
 			);
+		} finally {
+			client.release();
 		}
 	} catch (error) {
 		console.error('Invalid request error', error);
@@ -68,10 +85,20 @@ export async function DELETE(
 ) {
 	try {
 		const { id } = params;
+		const client = await pool.connect();
 		try {
-			const deletescreen = await prisma.screen.delete({
-				where: { screen_id: Number(id) },
-			});
+			const query = `
+            DELETE FROM "Screen"
+            WHERE screen_id = $1
+            RETURNING *`;
+			const values = [id];
+			const result = await client.query(query, values);
+			if (result.rowCount == 0) {
+				return NextResponse.json(
+					{ error: 'Screen not found' },
+					{ status: 404 }
+				);
+			}
 			return NextResponse.json({ message: 'Screen deleted successfully' });
 		} catch (error) {
 			console.error('Error executing query', error);
@@ -79,6 +106,8 @@ export async function DELETE(
 				{ error: 'Error executing query' },
 				{ status: 500 }
 			);
+		} finally {
+			client.release();
 		}
 	} catch (error) {
 		console.error('Invalid request error', error);
