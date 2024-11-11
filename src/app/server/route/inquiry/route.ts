@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
 
 		const query = `
 		INSERT INTO "Inquiry" (inquiry_subject, inquiry_content, inquiry_email)
-		VALUES ($1,$2,$3,$4,$5,$6)
+		VALUES ($1,$2,$3)
 		RETURNING *`;
 		const values = [inquiry_subject, inquiry_content, inquiry_email];
 		const result = await client.query(query, values);
