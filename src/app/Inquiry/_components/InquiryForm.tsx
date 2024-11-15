@@ -3,6 +3,8 @@ import {
 	Box,
 	Button,
 	Input,
+	MultiSelect,
+	Option,
 	Text,
 	Textarea,
 	useBreakpoint,
@@ -15,6 +17,7 @@ export const InquiryForm = () => {
 	const [email, setEmail] = useState('');
 	const [subject, setSubject] = useState('');
 	const [maintext, setMaintext] = useState('');
+	const [category, setCategory] = useState<string[]>([]);
 	const router = useRouter();
 
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -24,6 +27,7 @@ export const InquiryForm = () => {
 			inquiry_subject: formData.get('subject'),
 			inquiry_content: formData.get('maintext'),
 			inquiry_email: formData.get('email'),
+			inquiry_category: category,
 		};
 		try {
 			const response = await fetch('/server/route/inquiry', {
@@ -83,6 +87,19 @@ export const InquiryForm = () => {
 							onChange={(e) => setMaintext(e.target.value)}
 							h={'200px'}
 						/>
+					</Box>
+
+					<Box>
+						<MultiSelect
+							placeholder="カテゴリー選択"
+							value={category}
+							onChange={(value) => setCategory(value)}
+						>
+							<Option value="要望">要望</Option>
+							<Option value="質問">質問</Option>
+							<Option value="トラブル">トラブル</Option>
+							<Option value="その他">その他</Option>
+						</MultiSelect>
 					</Box>
 
 					<Button w="100%" m="20px auto" colorScheme="secondary" type="submit">
