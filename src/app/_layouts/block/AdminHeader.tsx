@@ -1,16 +1,10 @@
 'use client';
 
-import {
-	Box,
-	Drawer,
-	DrawerBody,
-	Link,
-	Text,
-	useDisclosure,
-} from '@yamada-ui/react';
+import { Box, Drawer, DrawerBody, Text, useDisclosure } from '@yamada-ui/react';
 import React from 'react';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { Icon } from '@yamada-ui/fontawesome';
+import Link from 'next/link';
 
 export const AdminHeader = () => {
 	const { isOpen, onOpen, onClose } = useDisclosure();
@@ -47,7 +41,7 @@ export const AdminHeader = () => {
 					<Drawer isOpen={isOpen} onClose={onClose} placement={'left'}>
 						<DrawerBody>
 							{drawerMenuList.map((index) => (
-								<Link key={index.id}>
+								<Link key={index.id} href="/">
 									<Text color={'#000'} fontSize={'1.6rem'}>
 										{index.navMenu}
 									</Text>
