@@ -13,7 +13,7 @@ import { customConfig } from '@/theme/config';
 import { Footer, Header, HeaderDrawer, SubHeader } from '../_layouts/block';
 import { ContextProvider } from '@/provider/Provider';
 import { Providers } from '../recoil/atoms/providers';
-import { AdminHeader } from '../admin/components/AdminHeader';
+import { AdminHeader } from '../_layouts/block/AdminHeader';
 
 type MainLayoutProps = {
 	children: React.ReactNode;
