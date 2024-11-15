@@ -46,7 +46,7 @@ export const LoginModal = () => {
 					</Text>
 					<Input
 						placeholder="Email"
-						name=""
+						name="Email"
 						value={email}
 						my={'10px'}
 						w={'100%'}
@@ -54,7 +54,8 @@ export const LoginModal = () => {
 					/>
 					<Input
 						placeholder="Password"
-						name=""
+						name="Password"
+						type="password"
 						value={password}
 						my={'10px'}
 						w={'100%'}
