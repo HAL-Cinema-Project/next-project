@@ -10,8 +10,7 @@ const pool = new Pool({
 
 interface Schedule {
 	schedule_id: number;
-	screen_id: number;
-	movie_id: number;
+	movie_schedule_id: number;
 	seat_id: number[];
 	time_id: number;
 }
@@ -36,13 +35,11 @@ export async function GET() {
 export async function POST(req: NextRequest) {
 	try {
 		const {
-			screen_id,
-			movie_id,
+			movie_schedule_id,
 			seat_id,
 			time_id,
 		}: {
-			screen_id: number;
-			movie_id: number;
+			movie_schedule_id: number;
 			seat_id: number[];
 			time_id: number;
 		} = await req.json();
@@ -51,10 +48,10 @@ export async function POST(req: NextRequest) {
 			// 配列の長さに応じて複数のINSERT文を生成
 			const insertQueries = seat_id.map((seat_ids) => ({
 				text: `
-                    INSERT INTO "Schedule" (screen_id, movie_id, seat_id, time_id)
-                    VALUES ($1, $2, $3, $4)
+                    INSERT INTO "Schedule" (movie_schedule_id, seat_id, time_id)
+                    VALUES ($1, $2, $3)
                     RETURNING *`,
-				values: [screen_id, movie_id, seat_ids, time_id],
+				values: [movie_schedule_id, seat_ids, time_id],
 			}));
 
 			// トランザクションを開始

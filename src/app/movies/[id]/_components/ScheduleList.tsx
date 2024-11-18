@@ -59,47 +59,57 @@ export const ScheduleList = (props: scheduleType) => {
 	return (
 		<>
 			{props.reservation === true ? (
-				screen.map((screen, index) => (
-					<Link
-						key={index}
-						href={{
-							pathname: '/bookings',
-							query: {
-								screen_id: screen.screen_id,
-								movie_id: props.movie_id,
-								time_id: time[index].time_id,
-							},
-						}}
-						passHref
-					>
-						<Card
-							w="240px"
-							h="200px"
-							color="#fff"
-							backgroundColor="#111"
-							borderRadius="2px"
-							_hover={{
-								bg: '#08f',
-								color: '#fff',
-								transition: 'background-color 0.3s ease',
+				screen.map((screen, index) => {
+					// time 配列の範囲を確認
+					const currentTime = time[index];
+
+					// time[index] が存在しない場合、表示しない
+					if (!currentTime) {
+						return null;
+					}
+
+					return (
+						<Link
+							key={index}
+							href={{
+								pathname: '/bookings',
+								query: {
+									screen_id: screen.screen_id,
+									movie_id: props.movie_id,
+									time_id: currentTime.time_id,
+								},
 							}}
+							passHref
 						>
-							<Box margin="auto">
-								<Text fontSize="1.4rem">
-									{time[index].movie_start || '時間未定'}
-								</Text>
-								<Text>Screen{screen.screen_id}</Text>
-								<Text>指</Text>
-								<SeatAvailability
-									movie_id={props.movie_id}
-									screen_id={screen.screen_id}
-									time_id={time[index].time_id}
-								></SeatAvailability>
-								<Text>予約可能</Text>
-							</Box>
-						</Card>
-					</Link>
-				))
+							<Card
+								w="240px"
+								h="200px"
+								color="#fff"
+								backgroundColor="#111"
+								borderRadius="2px"
+								_hover={{
+									bg: '#08f',
+									color: '#fff',
+									transition: 'background-color 0.3s ease',
+								}}
+							>
+								<Box margin="auto">
+									<Text fontSize="1.4rem">
+										{currentTime.movie_start || '時間未定'}
+									</Text>
+									<Text>Screen{screen.screen_id}</Text>
+									<Text>指</Text>
+									<SeatAvailability
+										movie_id={props.movie_id}
+										screen_id={screen.screen_id}
+										time_id={currentTime.time_id}
+									></SeatAvailability>
+									<Text>予約可能</Text>
+								</Box>
+							</Card>
+						</Link>
+					);
+				})
 			) : (
 				<Card
 					w="240px"
@@ -116,7 +126,6 @@ export const ScheduleList = (props: scheduleType) => {
 				>
 					<Text>{props.screening_time}</Text>
 					<Text>Screen{props.screen_number}</Text>
-					{/* <Text>指</Text> */}
 					<Text>予約不可</Text>
 				</Card>
 			)}
