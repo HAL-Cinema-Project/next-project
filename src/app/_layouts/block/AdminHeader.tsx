@@ -13,14 +13,17 @@ export const AdminHeader = () => {
 		{
 			id: 1,
 			navMenu: '映画管理',
+			route: '/admin/movie_admin',
 		},
 		{
 			id: 2,
 			navMenu: '上映管理',
+			route: '/admin/schedule_admin',
 		},
 		{
 			id: 3,
 			navMenu: '問い合わせ管理',
+			route: '/admin/inquiry_admin',
 		},
 	];
 
@@ -41,7 +44,7 @@ export const AdminHeader = () => {
 					<Drawer isOpen={isOpen} onClose={onClose} placement={'left'}>
 						<DrawerBody>
 							{drawerMenuList.map((index) => (
-								<Link key={index.id} href="/">
+								<Link key={index.id} href={index.route}>
 									<Text color={'#000'} fontSize={'1.6rem'}>
 										{index.navMenu}
 									</Text>

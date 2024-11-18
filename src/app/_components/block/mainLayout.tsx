@@ -22,7 +22,14 @@ type MainLayoutProps = {
 export function MainLayout({ children }: MainLayoutProps) {
 	const pathname = usePathname();
 
-	if (['/admin', '/admin/movie_admin'].includes(pathname)) {
+	if (
+		[
+			'/admin',
+			'/admin/movie_admin',
+			'/admin/schedule_admin',
+			'/admin/inquiry_admin',
+		].includes(pathname)
+	) {
 		return (
 			<Providers>
 				<ColorModeScript type="cookie" nonce="testing" />
