@@ -31,23 +31,37 @@ model Screen {
   screen_capacity Int
 
   // リレーション
-  schedules Schedule[]
+  movie_schedule MovieSchedule[]
+}
+
+// movie_scheduleモデル
+model MovieSchedule {
+  movie_schedule_id Int @id @default(autoincrement())
+  movie_id Int
+  screen_id Int
+  cinema_id Int
+  start_time DateTime
+  end_time DateTime
+  created_at DateTime
+  updated_at DateTime
+
+  // 外部キー設定
+  movie Movie @relation(fields: [movie_id], references: [movie_id])
+  screen Screen @relation(fields: [screen_id], references: [screen_id])
+  cinema Cinema @relation(fields: [cinema_id], references: [cinema_id])
+  schedule Schedule[]
 }
 
 // Scheduleモデル
 model Schedule {
   schedule_id   Int      @id @default(autoincrement())
-  screen_id     Int
-  movie_id      Int
+  movie_schedule_id Int
   seat_id       Int  // seat_idを配列に変更
-  time_id       Int
 
   // 外部キー設定
   schedule Cash[]
-  screen Screen @relation(fields: [screen_id], references: [screen_id])
-  movie  Movie  @relation(fields: [movie_id], references: [movie_id])
-  time   MovieTime @relation(fields: [time_id], references: [time_id])
   users  UserSchedule[]
+  movie_schedule MovieSchedule @relation(fields: [movie_schedule_id], references: [movie_schedule_id])
 }
 
 // Movieモデル
@@ -61,11 +75,13 @@ model Movie {
   movie_image2  String
   movie_cast String
   movie_director String
+  movie_start_date String
+  movie_end_date String
 
   // 外部キー設定
   category Category @relation(fields: [category_id], references: [category_id])
-  schedules Schedule[]
   cashes     Cash[]
+  movie_schedule MovieSchedule[]
 }
 
 // Seatモデル
@@ -150,8 +166,6 @@ model MovieTime {
   time_id Int @id @default(autoincrement())
   movie_start String
 
-  // 外部キー設定
-  schedules Schedule[]
 }
 
 // UserScheduleモデル
@@ -167,4 +181,27 @@ model UserSchedule {
   user User @relation(fields: [user_id], references: [user_id])
   schedule Schedule @relation(fields: [schedule_id], references: [schedule_id])
 
+}
+
+//Cinemaモデル
+model Cinema{
+  cinema_id Int @id @default(autoincrement())
+  cinema_region String
+  cinema_address String
+  cinema_tel String
+  cinema_email String
+  cinema_detail String
+  cinema_image String
+
+  movie_schedule MovieSchedule[]
+}
+
+// inquiryテーブル
+model Inquiry{
+  inquiry_id Int @id @default(autoincrement())
+  inquiry_subject String
+  inquiry_content String
+  inquiry_email String
+  inquiry_category String @default("")
+  created_at DateTime @default(now())
 }

@@ -7,6 +7,7 @@ import bcrypt from 'bcrypt';
 // db接続
 const pool = new Pool({
 	connectionString: process.env.DATABASE_URL,
+	max: 30,
 });
 
 interface Movie {

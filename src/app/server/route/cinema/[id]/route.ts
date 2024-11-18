@@ -1,6 +1,5 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import { NextResponse, NextRequest } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
 
 // db接続
@@ -8,11 +7,17 @@ const pool = new Pool({
 	connectionString: process.env.DATABASE_URL,
 });
 
-interface Category {
-	category_id: number;
-	category_name: string;
+interface Cinema {
+	cinema_id: number;
+	cinema_region: string;
+	cinema_address: string;
+	cinema_tel: string;
+	cinema_email: string;
+	cinema_detail: string;
+	cinema_image: string;
 }
 
+// getメソッド
 export async function GET(
 	req: NextRequest,
 	{ params }: { params: { id: number } }
@@ -22,7 +27,7 @@ export async function GET(
 
 	try {
 		const ret = await client.query(
-			'SELECT * FROM "Category" WHERE category_id = $1',
+			'SELECT * FROM "Cinema" WHERE cinema_id = $1',
 			[id]
 		);
 		if (ret.rows.length === 0) {
@@ -30,62 +35,73 @@ export async function GET(
 		}
 		return NextResponse.json(ret.rows[0]);
 	} catch (error) {
-		console.error('Error executing query', error);
+		console.error('Error fetching inquiry', error);
 		return NextResponse.json(
-			{ error: 'Error executing query' },
+			{ error: 'Error fetching inquiry' },
 			{ status: 500 }
 		);
-	} finally {
-		client.release();
 	}
 }
 
-// updateメソッド
+// inquiryの更新 (PATCHメソッド)
 export async function PATCH(
 	req: NextRequest,
 	{ params }: { params: { id: number } }
 ) {
+	const { id } = params;
+
 	try {
-		const { category_name }: Category = await req.json();
+		const {
+			cinema_address,
+			cinema_detail,
+			cinema_email,
+			cinema_image,
+			cinema_region,
+			cinema_tel,
+		}: Cinema = await req.json();
+		const client = await pool.connect();
 		const { id } = params;
 		try {
-			const client = await pool.connect();
-			const { id } = params;
-			try {
-				const query = `
-				UPDATE "Category"
-				SET category_name = $1,
-				WHERE movie_id = $9
-				RETURNING *`;
-				const values = [category_name, id];
-				const result = await client.query(query, values);
-				return NextResponse.json(result.rows[0], { status: 201 });
-			} catch (error) {
-				console.error('Error executing query', error);
-				return NextResponse.json(
-					{ error: 'Error executing query' },
-					{ status: 500 }
-				);
-			} finally {
-				client.release();
-			}
+			const query = `
+            UPDATE "Movie"
+            SET cinema_region = $1,
+            cinema_address = $2,
+            cinema_detail = $3,
+            cinema_email = $4,
+			cinema_tel = $5,
+			cinema_image = $6,
+            WHERE cinema_id = $7
+            RETURNING *`;
+			const values = [
+				cinema_region,
+				cinema_address,
+				cinema_detail,
+				cinema_email,
+				cinema_tel,
+				cinema_image,
+				id,
+			];
+			const result = await client.query(query, values);
+			return NextResponse.json(result.rows[0], { status: 201 });
 		} catch (error) {
 			console.error('Error executing query', error);
 			return NextResponse.json(
 				{ error: 'Error executing query' },
 				{ status: 500 }
 			);
+		} finally {
+			client.release();
 		}
 	} catch (error) {
-		console.error('Invalid request error', error);
+		console.error('Error updating inquiry', error);
 		return NextResponse.json(
-			{ error: 'Invalid request error' },
-			{ status: 400 }
+			{ error: 'Error updating category' },
+			{ status: 500 }
 		);
 	}
 }
 
-// Deleteメソッド
+// inquiryの削除 (DELETEメソッド)
 export async function DELETE(
 	req: NextRequest,
 	{ params }: { params: { id: number } }
@@ -95,8 +111,8 @@ export async function DELETE(
 		const client = await pool.connect();
 		try {
 			const query = `
-            DELETE FROM "Category"
-            WHERE category_id = $1
+            DELETE FROM "Cinema"
+            WHERE cinema_id = $1
             RETURNING *`;
 			const values = [id];
 			const result = await client.query(query, values);
