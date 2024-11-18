@@ -22,14 +22,17 @@ export const AdminTop = () => {
 		{
 			id: 1,
 			title: '映画管理',
+			route: '/admin/movie_admin',
 		},
 		{
 			id: 2,
 			title: '上映時間管理',
+			route: '/admin/schedule_admin',
 		},
 		{
 			id: 3,
 			title: 'お問い合わせ管理',
+			route: '/admin/inquiry_admin',
 		},
 	];
 
@@ -41,7 +44,7 @@ export const AdminTop = () => {
 				</Text>
 				<Box display={'flex'} justifyContent={'center'} gap={'25px'}>
 					{adminPageList.map((index) => (
-						<Link href={'/admin'} key={index.id}>
+						<Link href={index.route} key={index.id}>
 							<Card style={style.card} border={'2px solid #000'}>
 								<Box>
 									<Text style={style.text}>{index.title}</Text>
