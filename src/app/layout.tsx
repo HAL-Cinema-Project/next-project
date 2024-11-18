@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Michroma } from 'next/font/google';
-import { MainLayout } from './_components/mainLayout';
+import { MainLayout } from './_components/block/mainLayout';
 
 const font = Michroma({ weight: '400', subsets: ['latin'] });
 

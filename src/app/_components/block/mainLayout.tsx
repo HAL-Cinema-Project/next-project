@@ -10,10 +10,10 @@ import { usePathname } from 'next/navigation';
 
 import theme from '@/theme';
 import { customConfig } from '@/theme/config';
-import { Footer, Header, HeaderDrawer, SubHeader } from '../_layouts/block';
+import { Footer, Header, HeaderDrawer, SubHeader } from '../../_layouts/block';
 import { ContextProvider } from '@/provider/Provider';
-import { Providers } from '../recoil/atoms/providers';
-import { AdminHeader } from '../_layouts/block/AdminHeader';
+import { Providers } from '../../recoil/atoms/providers';
+import { AdminHeader } from '../../_layouts/block/AdminHeader';
 
 type MainLayoutProps = {
 	children: React.ReactNode;
@@ -22,7 +22,7 @@ type MainLayoutProps = {
 export function MainLayout({ children }: MainLayoutProps) {
 	const pathname = usePathname();
 
-	if (pathname === '/admin') {
+	if (['/admin', '/admin/movie_admin'].includes(pathname)) {
 		return (
 			<Providers>
 				<ColorModeScript type="cookie" nonce="testing" />
