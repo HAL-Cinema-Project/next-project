@@ -1,48 +1,42 @@
-import { Accordion, AccordionItem, Box } from '@yamada-ui/react';
-import React from 'react';
+'use client';
 
-const adminMovieList = [
-	{
-		id: 1,
-		movie_title: 'テストと実装の狭間に',
-		start_day: '2024-04-17',
-		category: 'アニメ',
-	},
-	{
-		id: 2,
-		movie_title: 'いつかテストする君と',
-		start_day: '2024-04-17',
-		category: '恋愛',
-	},
-	{
-		id: 3,
-		movie_title: 'TEST~それをしたら開発終わり~',
-		start_day: '2024-04-17',
-		category: 'ホラー',
-	},
-	{
-		id: 4,
-		movie_title: 'THE TEST',
-		start_day: '2024-04-17',
-		category: 'アニメ',
-	},
-	{
-		id: 5,
-		movie_title: 'テストをやめるな',
-		start_day: '2024-04-17',
-		category: 'アニメ',
-	},
-];
+import useFetchMovies from '@/app/hooks/useFetchMovies';
+import { Accordion, AccordionItem, Box, Button, Text } from '@yamada-ui/react';
 
 export const AdminMovieAccordion = () => {
+	const { movieData, filteredMovies, loading } = useFetchMovies();
+
 	return (
 		<>
 			<Box>
-				{adminMovieList.map((data) => (
-					<Accordion key={data.id} isToggle>
+				{movieData.map((data) => (
+					<Accordion key={data.movie_id} isToggle>
 						<AccordionItem
-							label={`作品名:${data.movie_title} 上映開始日:${data.start_day} カテゴリー:${data.category}`}
-						></AccordionItem>
+							label={`作品名:${data.movie_name}　　上映開始日:${data.movie_start_date}　　カテゴリー:${data.category_id}`}
+							bgColor={'#000'}
+							color={'#fff'}
+						>
+							<Box bgColor={'#222'} p={'20px'}>
+								<Text p={'5px'}>
+									時間 : {data.movie_time} &nbsp;&nbsp;&nbsp; メイン画像 :
+									{data.movie_image1} &nbsp;&nbsp;&nbsp; サブ画像 :{' '}
+									{data.movie_image2}
+								</Text>
+								<Text p={'5px'}>
+									監督 : {data.movie_director} &nbsp;&nbsp;&nbsp; キャスト :
+									{data.movie_cast}
+								</Text>
+								<Text p={'5px'}>説明 : {data.movie_detail}</Text>
+							</Box>
+							<Box display={'flex'} py={'10px'} gap={'10px'}>
+								<Button w={'100%'} bgColor={'#FF0000'} color={'#fff'}>
+									削除
+								</Button>
+								<Button w={'100%'} bgColor={'#007BFF'} color={'#fff'}>
+									編集
+								</Button>
+							</Box>
+						</AccordionItem>
 					</Accordion>
 				))}
 			</Box>
