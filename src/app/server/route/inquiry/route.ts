@@ -11,9 +11,11 @@ const pool = new Pool({
 interface Inquiry {
 	inquiry_id: number;
 	inquiry_subject: string;
-	inquiry_content: string;
-	inquiry_email: string;
+	inquiry_content: number;
+	inquiry_email: number;
+	created_at: string;
 	inquiry_category: string;
+	inquiry_comp: boolean;
 }
 
 //getメソッド
