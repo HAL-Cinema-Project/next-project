@@ -1,47 +1,3 @@
-// import {
-// 	Box,
-// 	Center,
-// 	SegmentedControl,
-// 	SegmentedControlItem,
-// } from '@yamada-ui/react';
-// import React from 'react';
-// import { movieCard } from '@/mock/theater/movie/mock';
-// import { fetchMovieResponse } from '@/mock/theater/movie/MovieInterface';
-// import { MovieScheduleField } from './_components/MovieScheduleField';
-// import { BreadcrumbList } from './_components/BreadcrumbList';
-// import { Title } from './_components/Title';
-// import { getNextWeekDates } from '@/utils/scheduleDate';
-
-// const Page = () => {
-// 	const items: SegmentedControlItem[] = getNextWeekDates();
-// 	return (
-// 		<Box
-// 			margin="0 auto"
-// 			marginBottom="15px"
-// 			maxWidth="1500px"
-// 			width="100%"
-// 			height="auto"
-// 			backgroundColor="#fff"
-// 		>
-// 			<BreadcrumbList />
-// 			<Title/>
-
-// 			<SegmentedControl marginTop={"15px"} width={"100%"} borderRadius={"2px"} items={items} />
-
-// 			{movieCard.map((data: fetchMovieResponse) => (
-// 				<MovieScheduleField
-// 					key={data.id}
-// 					id={data.id}
-// 					title={data.title}
-// 					image={data.movie_image}
-// 				/>
-// 			))}
-// 		</Box>
-// 	);
-// };
-
-// export default Page;
-
 'use client';
 import {
 	Box,
@@ -56,16 +12,25 @@ import { BreadcrumbList } from './_components/BreadcrumbList';
 import { Title } from './_components/Title';
 import { getNextWeekDates } from '@/utils/scheduleDate';
 import { fetchMovie } from '@/app/hooks/useMovie';
+import { useParams } from 'next/navigation';
+import { fetchCinemaId } from '@/app/hooks/useCinemaId';
 
 interface Movie {
-	key: number;
 	movie_id: number;
 	movie_image: string;
 	movie_name: string;
+	cinema_id: number;
+}
+
+interface Cinema {
+	cinema_id: number;
 }
 
 const Page = () => {
+	const params = useParams();
+	const cinemaId = Number(params.id); // 動的パラメータを取得し、数値型に変換
 	const [movies, setMovies] = useState<Movie[]>([]);
+	const [cinemas, setCinemas] = useState<Cinema | null>(null);
 	const [loading, setLoading] = useState(true);
 	const items: SegmentedControlItem[] = getNextWeekDates();
 	const breakpoint = useBreakpointValue({ base: 'base', sm: 'sm', md: 'md' });
@@ -74,21 +39,33 @@ const Page = () => {
 
 	useEffect(() => {
 		const fetchData = async () => {
-			const moviesData = await fetchMovie();
-			const formattedData: Movie[] = moviesData.map((movie: any) => ({
+			const moviesData = await fetchMovie(); // 映画データ
+
+			console.log(cinemaId);
+			// 対象の映画館に紐づく映画をフィルタリング
+			const filteredMovies = moviesData.filter(
+				(movie: any) => movie.cinema_id === cinemaId
+			);
+
+			// フィルタリング結果をフォーマット
+			const formattedData: Movie[] = filteredMovies.map((movie: any) => ({
 				movie_id: movie.movie_id,
 				movie_image: movie.movie_image1,
 				movie_name: movie.movie_name,
 			}));
+
 			setMovies(formattedData);
 			setLoading(false);
 		};
-		fetchData();
-	}, []);
+
+		// cinemaId が存在する場合のみデータを取得
+		if (cinemaId) fetchData();
+	}, [cinemaId]);
 
 	if (loading) {
-		return <p>loading</p>;
+		return <p>Loading...</p>;
 	}
+
 	return (
 		<Box
 			margin="0 auto"
@@ -118,12 +95,14 @@ const Page = () => {
 					}}
 				/>
 			</Box>
+
 			{movies.map((movie: Movie) => (
 				<MovieScheduleField
 					key={movie.movie_id}
 					movie_id={movie.movie_id}
 					movie_image={movie.movie_image}
 					movie_name={movie.movie_name}
+					cinema_id={cinemaId}
 				/>
 			))}
 		</Box>

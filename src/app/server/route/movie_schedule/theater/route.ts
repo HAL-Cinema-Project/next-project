@@ -18,15 +18,15 @@ interface MovieSchedule {
 
 export async function GET(
 	req: NextRequest,
-	{ params }: { params: { movie_id: number } }
+	{ params }: { params: { cinema_id: number } }
 ) {
 	const client = await pool.connect();
-	const { movie_id } = params;
+	const { cinema_id } = params;
 
 	try {
 		const ret = await client.query(
-			'SELECT * FROM "MovieSchedule" WHERE movie_id = $1',
-			[movie_id]
+			'SELECT * FROM "MovieSchedule" WHERE cinema_id = $1',
+			[cinema_id]
 		);
 		if (ret.rows.length === 0) {
 			return NextResponse.json({ error: 'Movie not found' }, { status: 404 });
