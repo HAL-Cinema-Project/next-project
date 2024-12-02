@@ -3,8 +3,9 @@ import { Box, Card, Text } from '@yamada-ui/react';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { useHover } from '@yamada-ui/react';
-import { fetchScreenNumber } from '@/app/hooks/useScreen_Number';
-import { fetchTime } from '@/app/hooks/useTime';
+import { fetchMovieSchedule } from '@/app/hooks/useMovieSchedule';
+import { fetchMovieSchedules } from '@/app/hooks/useMovieScheduleMovie';
+import { fetchCinemaSchedules } from '@/app/hooks/useMovieScheduleTheater';
 
 type propsType = {
 	key: number;
@@ -13,58 +14,46 @@ type propsType = {
 	screen_number: string;
 	reservation: boolean;
 	movie_id: number;
+	cinema_id: number;
 };
 
-interface Screen {
+interface MovieSchedule {
+	movie_schedule_id: number;
+	cinema_id: number;
 	screen_id: number;
-}
-
-interface MovieTime {
-	time_id: number;
-	movie_start: string;
+	movie_id: number;
+	start_time: number;
+	end_time: number;
 }
 
 export const TheaterSchedule = (props: propsType) => {
-	const [screen, setScreen] = useState<Screen[]>([]);
-	const [time, setTime] = useState<MovieTime[]>([]);
+	const [schedule, setSchedule] = useState<MovieSchedule[]>([]);
 	const { hovered, ref } = useHover();
 
 	useEffect(() => {
 		const fetchData = async () => {
-			const screen_data = await fetchScreenNumber();
+			const screen_data = await fetchCinemaSchedules(props.cinema_id);
 
-			const formattedScreen: Screen[] = screen_data.map((screen: any) => ({
-				screen_id: screen.screen_id,
-			}));
-			setScreen(formattedScreen);
+			const formattedScreen: MovieSchedule[] = screen_data.map(
+				(screen: any) => ({
+					screen_id: screen.screen_id,
+				})
+			);
+			setSchedule(formattedScreen);
 		};
 		fetchData();
-	}, []);
+	}, [props.cinema_id]);
 
-	useEffect(() => {
-		const fetchTimeData = async () => {
-			const time_data = await fetchTime();
-
-			const formatTime: MovieTime[] = time_data.map((time: any) => ({
-				time_id: time.time_id,
-				movie_start: time.movie_start,
-			}));
-			setTime(formatTime);
-		};
-		fetchTimeData();
-	}, []);
 	return (
 		<>
 			{props.reservation === true ? (
-				screen.map((screen, index) => (
+				schedule.map((schedule, index) => (
 					<Link
 						key={index}
 						href={{
 							pathname: '/bookings',
 							query: {
-								screen_id: screen.screen_id,
-								movie_id: props.movie_id,
-								time_id: time[index]?.time_id,
+								screen_id: schedule.screen_id,
 							},
 						}}
 						passHref
@@ -84,8 +73,8 @@ export const TheaterSchedule = (props: propsType) => {
 							}}
 						>
 							<Box margin="auto">
-								<Text fontSize="1.4rem">{time[index]?.movie_start}</Text>
-								<Text>Screen{screen.screen_id}</Text>
+								<Text fontSize="1.4rem">{schedule.start_time}</Text>
+								<Text>Screen{schedule.screen_id}</Text>
 								<Text>予約可能</Text>
 							</Box>
 						</Card>

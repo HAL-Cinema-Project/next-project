@@ -5,6 +5,7 @@ import BreadcrumbList from './_components/BreadcrumbList';
 import Title from './_components/Title';
 import { fetchCinema } from '../hooks/useCinema';
 import Placeholder from '../movies/_components/Placeholder';
+import Link from 'next/link';
 
 interface Cinema {
 	cinema_id: number;
@@ -69,9 +70,6 @@ const Page = () => {
 						border="solid 1px #ddd"
 						backgroundColor="#fff"
 						cursor="pointer"
-						onClick={() =>
-							(window.location.href = `/theaters/${data.cinema_id}`)
-						}
 						_hover={{
 							'& .title-box': {
 								backgroundColor: '#08f',
@@ -79,101 +77,103 @@ const Page = () => {
 							},
 						}}
 					>
-						<Box
-							className="title-box"
-							width="calc(100% - 20px)"
-							height="40px"
-							marginLeft="10px"
-							borderRadius="2px"
-							backgroundColor="#111"
-						>
-							<p
-								style={{
-									paddingLeft: '10px',
-									fontSize: '30px',
-									lineHeight: '1.2',
-									color: '#fff',
-								}}
-							>
-								{data.cinema_region}
-							</p>
-						</Box>
-						<Box
-							display="flex"
-							flexDirection={
-								['sm', 'md'].includes(breakpoint) ? 'column' : 'row'
-							}
-						>
+						<Link href={`../theaters/${data.cinema_id}`}>
 							<Box
-								flex="3"
-								margin="10px 10px 0 10px"
+								className="title-box"
+								width="calc(100% - 20px)"
+								height="40px"
+								marginLeft="10px"
 								borderRadius="2px"
-								backgroundColor="#fff"
+								backgroundColor="#111"
 							>
-								<Box position="relative" width="100%">
-									<Image
-										src={data.cinema_image}
-										alt={data.cinema_region}
-										style={{ borderRadius: '2px', objectFit: 'cover' }}
-									/>
-								</Box>
+								<p
+									style={{
+										paddingLeft: '10px',
+										fontSize: '30px',
+										lineHeight: '1.2',
+										color: '#fff',
+									}}
+								>
+									{data.cinema_region}
+								</p>
 							</Box>
 							<Box
-								flex="7"
 								display="flex"
-								flexDirection="column"
-								margin={
-									['sm', 'md'].includes(breakpoint) ? '0 10px 0 10px' : '0'
+								flexDirection={
+									['sm', 'md'].includes(breakpoint) ? 'column' : 'row'
 								}
 							>
 								<Box
-									width={
-										['sm', 'md'].includes(breakpoint)
-											? '100%'
-											: 'calc(100% - 10px)'
-									}
+									flex="3"
+									margin="10px 10px 0 10px"
 									borderRadius="2px"
-									border="solid 1px #ddd"
 									backgroundColor="#fff"
-									fontSize="16px"
-									padding="10px"
-									marginTop="10px"
-									marginBottom="10px"
 								>
-									住所: {data.cinema_address} 電話番号:
-									{data.cinema_tel}
-									<br />
-									メールアドレス {data.cinema_email}
-									<br />
-									スクリーン数: 8<br />
-									特徴 料金形態
-									<br />
+									<Box position="relative" width="100%">
+										<Image
+											src={data.cinema_image}
+											alt={data.cinema_region}
+											style={{ borderRadius: '2px', objectFit: 'cover' }}
+										/>
+									</Box>
 								</Box>
 								<Box
-									width={
-										['sm', 'md'].includes(breakpoint)
-											? '100%'
-											: 'calc(100% - 10px)'
+									flex="7"
+									display="flex"
+									flexDirection="column"
+									margin={
+										['sm', 'md'].includes(breakpoint) ? '0 10px 0 10px' : '0'
 									}
-									borderRadius="2px"
-									border="solid 1px #ddd"
-									backgroundColor="#fff"
 								>
-									<iframe
-										src={cinemaMapUrls[data.cinema_id] || ''}
-										width="100%"
-										height="300px"
-										loading="lazy"
-										style={{
-											border: 'none',
-											margin: 0,
-											padding: 0,
-											display: 'block',
-										}}
-									></iframe>
+									<Box
+										width={
+											['sm', 'md'].includes(breakpoint)
+												? '100%'
+												: 'calc(100% - 10px)'
+										}
+										borderRadius="2px"
+										border="solid 1px #ddd"
+										backgroundColor="#fff"
+										fontSize="16px"
+										padding="10px"
+										marginTop="10px"
+										marginBottom="10px"
+									>
+										住所: {data.cinema_address} 電話番号:
+										{data.cinema_tel}
+										<br />
+										メールアドレス {data.cinema_email}
+										<br />
+										スクリーン数: 8<br />
+										特徴 料金形態
+										<br />
+									</Box>
+									<Box
+										width={
+											['sm', 'md'].includes(breakpoint)
+												? '100%'
+												: 'calc(100% - 10px)'
+										}
+										borderRadius="2px"
+										border="solid 1px #ddd"
+										backgroundColor="#fff"
+									>
+										<iframe
+											src={cinemaMapUrls[data.cinema_id] || ''}
+											width="100%"
+											height="300px"
+											loading="lazy"
+											style={{
+												border: 'none',
+												margin: 0,
+												padding: 0,
+												display: 'block',
+											}}
+										></iframe>
+									</Box>
 								</Box>
 							</Box>
-						</Box>
+						</Link>
 					</Box>
 				))
 			)}

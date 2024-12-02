@@ -59,8 +59,7 @@ export const useSeat = () => {
 
 	const handleReserveSeat = async (
 		screenId: number,
-		movieId: number,
-		timeId: number
+		MovieScheduleId: number
 	): Promise<void> => {
 		try {
 			const seatIds: number[] = [];
@@ -76,10 +75,8 @@ export const useSeat = () => {
 			});
 
 			const seatData = {
-				screen_id: screenId,
-				movie_id: movieId,
+				movie_schedule_id: MovieScheduleId,
 				seat_id: seatIds,
-				time_id: timeId,
 			};
 
 			// デバッグ用にseatDataをログ出力
