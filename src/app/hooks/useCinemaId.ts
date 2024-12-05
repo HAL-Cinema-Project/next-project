@@ -8,7 +8,7 @@ type Cinema = {
 	cinema_image: string;
 };
 
-const fetchCinemaId = async (id: number): Promise<Cinema | null> => {
+export const fetchCinemaId = async (id: number): Promise<Cinema | null> => {
 	try {
 		const response = await fetch(`../server/route/cinema/${id}`);
 		if (!response.ok) {

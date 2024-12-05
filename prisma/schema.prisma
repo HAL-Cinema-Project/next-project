@@ -204,4 +204,5 @@ model Inquiry{
   inquiry_email String
   inquiry_category String @default("")
   created_at DateTime @default(now())
+  inquiry_comp Boolean
 }

@@ -12,6 +12,7 @@ const useFetchMovies = () => {
 	useEffect(() => {
 		const fetchData = async () => {
 			const moviesData = await fetchMovie();
+
 			const formattedData: Movie[] = moviesData.map((movie: Movie) => ({
 				movie_id: movie.movie_id,
 				movie_name: movie.movie_name,

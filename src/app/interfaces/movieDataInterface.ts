@@ -11,3 +11,12 @@ export interface Movie {
 	movie_start_date: string;
 	movie_end_date: string;
 }
+export interface Inquiry {
+	inquiry_id: number;
+	inquiry_subject: string;
+	inquiry_content: number;
+	inquiry_email: number;
+	created_at: string;
+	inquiry_category: string;
+	inquiry_comp: boolean;
+}

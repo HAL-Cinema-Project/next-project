@@ -135,9 +135,7 @@ const Page = () => {
 							color: '#fff',
 							transition: 'background-color 0.3s ease',
 						}}
-						onClick={() =>
-							handleReserveSeat(screen_number, movie_number, time_number)
-						}
+						onClick={() => handleReserveSeat(screen_number, movie_number)}
 					>
 						選択した座席を予約する
 					</Button>

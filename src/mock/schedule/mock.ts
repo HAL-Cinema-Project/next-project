@@ -5,5 +5,6 @@ export const scheduleData = [
 		screen_number: 'screen8',
 		reservation: true,
 		movie_id: 1,
+		cinema_id: 1,
 	},
 ];
