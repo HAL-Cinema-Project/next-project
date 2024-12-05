@@ -1,4 +1,3 @@
-// FormData.ts
 export interface FormData {
 	movieName: string;
 	startDate: string;

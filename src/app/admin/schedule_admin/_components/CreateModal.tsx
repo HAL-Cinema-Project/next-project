@@ -1,6 +1,5 @@
 'use client';
 
-import { FormData } from './FormData';
 import { useState } from 'react';
 import {
 	Box,
@@ -11,38 +10,32 @@ import {
 	ModalBody,
 	ModalFooter,
 } from '@yamada-ui/react';
-import useFetchCategories from '@/app/hooks/useFetchCategories';
 import { FormFields } from './CreateFormFields';
+import { FormData } from './FormData';
 
 export const CreateModal = () => {
-	const { categoryData } = useFetchCategories();
-
 	const [isOpen, setIsOpen] = useState(false);
 	const [formData, setFormData] = useState<FormData>({
 		movieName: '',
-		startDate: '',
-		category: '',
-		duration: '',
-		director: '',
-		cast: '',
-		description: '',
-		mainImage: null,
-		subImage: null,
+		theaterType: '',
+		screenNumber: '',
+		screeningDate: '',
+		startTime: '',
+		endTime: '',
 	});
+
+	const theaterTypes = ['IMAX', '4DX', '通常', 'プレミアム'];
 
 	const openModal = () => setIsOpen(true);
 	const closeModal = () => {
 		setIsOpen(false);
 		setFormData({
 			movieName: '',
-			startDate: '',
-			category: '',
-			duration: '',
-			director: '',
-			cast: '',
-			description: '',
-			mainImage: null,
-			subImage: null,
+			theaterType: '',
+			screenNumber: '',
+			screeningDate: '',
+			startTime: '',
+			endTime: '',
 		});
 	};
 
@@ -51,9 +44,11 @@ export const CreateModal = () => {
 
 		if (
 			!formData.movieName ||
-			!formData.startDate ||
-			!formData.category ||
-			!formData.mainImage
+			!formData.theaterType ||
+			!formData.screenNumber ||
+			!formData.screeningDate ||
+			!formData.startTime ||
+			!formData.endTime
 		) {
 			alert('入力していない項目があります。');
 			return;
@@ -84,7 +79,7 @@ export const CreateModal = () => {
 						<FormFields
 							formData={formData}
 							setFormData={setFormData}
-							categoryData={categoryData}
+							theaterTypes={theaterTypes}
 						/>
 					</ModalBody>
 					<ModalFooter>
