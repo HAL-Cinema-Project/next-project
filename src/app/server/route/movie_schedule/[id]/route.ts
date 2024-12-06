@@ -1,11 +1,6 @@
+import pool from '@/app/server/PoolClient';
 import { PrismaClient } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
-import { Pool } from 'pg';
-
-// db接続
-const pool = new Pool({
-	connectionString: process.env.DATABASE_URL,
-});
 
 interface MovieSchedule {
 	movie_schedule_id: number;

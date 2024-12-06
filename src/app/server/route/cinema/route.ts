@@ -1,12 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 import { Client, Pool } from 'pg';
-
-// db接続
-const pool = new Pool({
-	connectionString: process.env.DATABASE_URL,
-	max: 30,
-});
+import pool from '../../PoolClient';
 
 interface Cinema {
 	cinema_id: number;

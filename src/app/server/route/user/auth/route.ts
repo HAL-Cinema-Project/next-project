@@ -1,16 +1,6 @@
+import pool from '@/app/server/PoolClient';
 import { supabase } from '../../../supabase_index';
 import { NextRequest, NextResponse } from 'next/server';
-
-import { Pool } from 'pg';
-
-// PSQL接続情報
-const pool = new Pool({
-	user: process.env.DB_USER,
-	password: process.env.DB_PASSWORD,
-	host: process.env.DB_HOST,
-	port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : undefined,
-	database: process.env.DB_NAME,
-});
 
 export async function GET(req: NextRequest) {
 	try {

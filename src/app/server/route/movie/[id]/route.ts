@@ -1,12 +1,6 @@
+import pool from '@/app/server/PoolClient';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { NextResponse, NextRequest } from 'next/server';
-import { Pool } from 'pg';
-import bcrypt from 'bcrypt';
-
-// db接続
-const pool = new Pool({
-	connectionString: process.env.DATABASE_URL,
-});
 
 interface Movie {
 	movie_id: number;

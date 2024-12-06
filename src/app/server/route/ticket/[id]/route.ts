@@ -1,11 +1,7 @@
+import pool from '@/app/server/PoolClient';
 import { error } from 'console';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { NextRequest, NextResponse } from 'next/server';
-import { Pool } from 'pg';
-
-const pool = new Pool({
-	connectionString: process.env.DATABASE_URL,
-});
 
 interface Ticket {
 	ticket_id: number;

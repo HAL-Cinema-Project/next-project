@@ -2,12 +2,7 @@
 import { PrismaClient } from '@prisma/client';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { NextResponse, NextRequest } from 'next/server';
-import { Pool } from 'pg';
-
-// db接続
-const pool = new Pool({
-	connectionString: process.env.DATABASE_URL,
-});
+import pool from '../../PoolClient';
 
 interface Category {
 	category_id: number;

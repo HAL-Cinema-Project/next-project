@@ -1,13 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { NextRequest, NextResponse } from 'next/server';
-import { Pool } from 'pg';
 import bcrypt from 'bcrypt';
 import { isFunctionDeclaration } from 'typescript';
-
-// db接続情報
-const pool = new Pool({
-	connectionString: process.env.DATABASE_URL,
-});
+import pool from '@/app/server/PoolClient';
 
 interface Schedule {
 	schedule_id: number;

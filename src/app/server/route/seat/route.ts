@@ -1,12 +1,7 @@
 // seatモデルのAPIを定義
 import { NextRequest, NextResponse } from 'next/server';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { Pool } from 'pg';
-
-// db接続情報
-const pool = new Pool({
-	connectionString: process.env.DATABASE_URL,
-});
+import pool from '../../PoolClient';
 
 interface Seat {
 	seat_id: number;

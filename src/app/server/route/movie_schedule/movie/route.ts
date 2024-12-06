@@ -1,9 +1,6 @@
+import pool from '@/app/server/PoolClient';
 import { NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
-
-const pool = new Pool({
-	connectionString: process.env.DATABASE_URL,
-});
 
 interface MovieSchedule {
 	movie_schedule_id: number;

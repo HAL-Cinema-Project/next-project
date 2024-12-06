@@ -1,13 +1,6 @@
+import pool from '@/app/server/PoolClient';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { NextRequest, NextResponse } from 'next/server';
-import { Pool } from 'pg';
-import bcrypt from 'bcrypt';
-import { error } from 'console';
-
-// db接続
-const pool = new Pool({
-	connectionString: process.env.DATABASE_URL,
-});
 
 interface Price {
 	price_id: number;

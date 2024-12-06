@@ -1,15 +1,10 @@
 import { NextResponse, NextRequest } from 'next/server';
-import { Pool } from 'pg';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import { supabase } from '../../../supabase_index';
+import pool from '@/app/server/PoolClient';
 
 const prisma = new PrismaClient();
-
-// db接続
-const pool = new Pool({
-	connectionString: process.env.DATABASE_URL,
-});
 
 interface User {
 	user_id: string;
