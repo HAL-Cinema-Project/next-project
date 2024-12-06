@@ -1,16 +1,7 @@
 // cashモデルのAPIを定義
 import { NextApiRequest, NextApiResponse } from 'next';
 import { NextResponse, NextRequest } from 'next/server';
-import { Pool } from 'pg';
-
-// PSQL接続情報
-const pool = new Pool({
-	user: process.env.DB_USER,
-	password: process.env.DB_PASSWORD,
-	host: process.env.DB_HOST,
-	port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : undefined,
-	database: process.env.DB_NAME,
-});
+import pool from '../../PoolClient';
 
 interface Discount {
 	discount_id: number;

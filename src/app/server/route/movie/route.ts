@@ -1,14 +1,8 @@
 // movieモデルのAPIを定義
 import { NextApiRequest, NextApiResponse } from 'next';
 import { NextResponse, NextRequest } from 'next/server';
-import { Pool } from 'pg';
 import bcrypt from 'bcrypt';
-
-// db接続
-const pool = new Pool({
-	connectionString: process.env.DATABASE_URL,
-	max: 30,
-});
+import pool from '../../PoolClient';
 
 interface Movie {
 	movie_id: number;

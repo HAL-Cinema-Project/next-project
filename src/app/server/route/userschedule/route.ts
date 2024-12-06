@@ -1,11 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { NextRequest, NextResponse } from 'next/server';
-import { Pool } from 'pg';
-
-// DB接続
-const pool = new Pool({
-	connectionString: process.env.DATABASE_URL,
-});
+import pool from '../../PoolClient';
 
 interface UserSchedule {
 	user_schedule_id: number;

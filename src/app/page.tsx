@@ -39,6 +39,7 @@ export default function Page() {
 	useEffect(() => {
 		const fetchData = async () => {
 			const moviesData = await fetchMovie();
+			if (!moviesData) return;
 			const formattedMovies: Movie[] = moviesData.map((movie: any) => ({
 				movie_id: movie.movie_id,
 				movie_image: movie.movie_image1,

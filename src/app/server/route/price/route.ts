@@ -1,14 +1,8 @@
 // priceモデルのAPIを定義
 import { NextApiRequest, NextApiResponse } from 'next';
 import { NextResponse, NextRequest } from 'next/server';
-import { Pool } from 'pg';
-import bcrypt from 'bcrypt';
 import { resourceLimits } from 'worker_threads';
-
-// db接続
-const pool = new Pool({
-	connectionString: process.env.DATABASE_URL,
-});
+import pool from '../../PoolClient';
 
 interface Price {
 	price_id: number;

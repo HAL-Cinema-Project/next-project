@@ -3,11 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
 import bcrypt from 'bcrypt';
 import { error } from 'console';
-
-// db接続
-const pool = new Pool({
-	connectionString: process.env.DATABASE_URL,
-});
+import pool from '@/app/server/PoolClient';
 
 interface Screen {
 	screen_id: number;
