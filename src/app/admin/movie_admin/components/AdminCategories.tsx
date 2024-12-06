@@ -1,3 +1,4 @@
+// AdminCategories.tsx
 'use client';
 
 import useFetchCategories from '@/app/hooks/useFetchCategories';
@@ -45,8 +46,6 @@ export const AdminCategories = () => {
 					</Button>
 				))}
 			</Box>
-
-			<CreateModal />
 		</>
 	);
 };
