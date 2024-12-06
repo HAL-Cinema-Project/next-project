@@ -14,10 +14,15 @@ import {
 import useFetchCategories from '@/app/hooks/useFetchCategories';
 import { FormFields } from './CreateFormFields';
 
-export const CreateModal = () => {
+export const CreateModal = ({
+	isOpen,
+	onClose,
+}: {
+	isOpen: boolean;
+	onClose: () => void;
+}) => {
 	const { categoryData } = useFetchCategories();
 
-	const [isOpen, setIsOpen] = useState(false);
 	const [formData, setFormData] = useState<FormData>({
 		movieName: '',
 		startDate: '',
@@ -29,22 +34,6 @@ export const CreateModal = () => {
 		mainImage: null,
 		subImage: null,
 	});
-
-	const openModal = () => setIsOpen(true);
-	const closeModal = () => {
-		setIsOpen(false);
-		setFormData({
-			movieName: '',
-			startDate: '',
-			category: '',
-			duration: '',
-			director: '',
-			cast: '',
-			description: '',
-			mainImage: null,
-			subImage: null,
-		});
-	};
 
 	const handleAdd = () => {
 		console.log('送信データ:', formData);
@@ -59,55 +48,49 @@ export const CreateModal = () => {
 			return;
 		}
 
-		closeModal();
+		onClose();
 	};
 
 	return (
-		<Box>
-			<Button onClick={openModal} bgColor={'#007BFF'} color={'#fff'}>
-				項目追加
-			</Button>
-
-			<Modal isOpen={isOpen} onClose={closeModal} size="3xl">
-				<ModalOverlay />
-				<Box
-					as="div"
-					bg="white"
-					borderRadius="md"
-					p="4"
-					mx="auto"
-					mt="5%"
-					height="auto"
-				>
-					<ModalHeader>新しい項目を追加</ModalHeader>
-					<ModalBody overflowY="auto" maxHeight="60vh">
-						<FormFields
-							formData={formData}
-							setFormData={setFormData}
-							categoryData={categoryData}
-						/>
-					</ModalBody>
-					<ModalFooter>
-						<Button
-							onClick={closeModal}
-							bgColor={'#FF0000'}
-							color={'#fff'}
-							w="150px"
-						>
-							キャンセル
-						</Button>
-						<Button
-							onClick={handleAdd}
-							bgColor={'#007BFF'}
-							color={'#fff'}
-							mr={3}
-							w="150px"
-						>
-							追加
-						</Button>
-					</ModalFooter>
-				</Box>
-			</Modal>
-		</Box>
+		<Modal isOpen={isOpen} onClose={onClose} size="3xl">
+			<ModalOverlay />
+			<Box
+				as="div"
+				bg="white"
+				borderRadius="md"
+				p="4"
+				mx="auto"
+				mt="5%"
+				height="auto"
+			>
+				<ModalHeader>新しい項目を追加</ModalHeader>
+				<ModalBody overflowY="auto" maxHeight="60vh">
+					<FormFields
+						formData={formData}
+						setFormData={setFormData}
+						categoryData={categoryData}
+					/>
+				</ModalBody>
+				<ModalFooter>
+					<Button
+						onClick={onClose}
+						bgColor={'#FF0000'}
+						color={'#fff'}
+						w="150px"
+					>
+						キャンセル
+					</Button>
+					<Button
+						onClick={handleAdd}
+						bgColor={'#007BFF'}
+						color={'#fff'}
+						mr={3}
+						w="150px"
+					>
+						追加
+					</Button>
+				</ModalFooter>
+			</Box>
+		</Modal>
 	);
 };
