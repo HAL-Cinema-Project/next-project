@@ -1,4 +1,3 @@
-// CreateModal.tsx
 'use client';
 
 import { FormData } from './FormData';

@@ -38,7 +38,6 @@
 // 	);
 // };
 
-// MovieSort.tsx
 import { Box, Button, Input } from '@yamada-ui/react';
 import React, { useState } from 'react';
 import { CreateModal } from './CreateModal';
