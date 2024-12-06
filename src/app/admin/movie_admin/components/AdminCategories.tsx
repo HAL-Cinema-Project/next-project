@@ -4,6 +4,8 @@ import useFetchCategories from '@/app/hooks/useFetchCategories';
 import { Box, Button } from '@yamada-ui/react';
 import React from 'react';
 
+import { CreateModal } from './CreateModal';
+
 export const AdminCategories = () => {
 	const { categoryData } = useFetchCategories();
 
@@ -43,6 +45,8 @@ export const AdminCategories = () => {
 					</Button>
 				))}
 			</Box>
+
+			<CreateModal />
 		</>
 	);
 };

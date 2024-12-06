@@ -3,6 +3,8 @@
 import useFetchSchedules from '@/app/hooks/useFetchSchedules';
 import { Accordion, AccordionItem, Box, Button, Text } from '@yamada-ui/react';
 
+import { CreateModal } from './CreateModal';
+
 export const AdminScheduleAccordion = () => {
 	const { scheduleData, loading } = useFetchSchedules();
 
@@ -36,6 +38,8 @@ export const AdminScheduleAccordion = () => {
 					</AccordionItem>
 				</Accordion>
 			))}
+
+			<CreateModal />
 		</Box>
 	);
 };
