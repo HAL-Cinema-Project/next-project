@@ -4,7 +4,7 @@ import { Movie } from '@/app/interfaces/movieDataInterface';
 import { Accordion, AccordionItem, Box, Button, Text } from '@yamada-ui/react';
 
 interface AdminMovieAccordionProps {
-	movies: Movie[]; // フィルタリングされた映画データ
+	movies: (Movie & { onEdit: () => void })[]; // onEdit を含む映画データ
 }
 
 export const AdminMovieAccordion: React.FC<AdminMovieAccordionProps> = ({
@@ -35,7 +35,12 @@ export const AdminMovieAccordion: React.FC<AdminMovieAccordionProps> = ({
 							<Button w={'100%'} bgColor={'#FF0000'} color={'#fff'}>
 								削除
 							</Button>
-							<Button w={'100%'} bgColor={'#007BFF'} color={'#fff'}>
+							<Button
+								w={'100%'}
+								bgColor={'#007BFF'}
+								color={'#fff'}
+								onClick={data.onEdit} // 編集ボタンがクリックされたときの処理
+							>
 								編集
 							</Button>
 						</Box>
